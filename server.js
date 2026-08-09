@@ -79,7 +79,6 @@ function cleanUsername(name) {
 // ======================================================
 
 function getDonationTheme(amount) {
-
 	// 100,000 - 999,999 — PINK
 	if (amount < 1_000_000) {
 		return {
@@ -122,7 +121,6 @@ async function createDonationCard({
 	donatorId,
 	raiserId
 }) {
-
 	const [
 		donatorAvatar,
 		raiserAvatar
@@ -164,6 +162,54 @@ async function createDonationCard({
 		cleanUsername(raiserName);
 
 	// ==================================================
+	// AMOUNT SIZE
+	// Keeps large amounts inside the centre area
+	// ==================================================
+
+	let amountFontSize = 150;
+
+	if (formattedAmount.length >= 10) {
+		amountFontSize = 110;
+	} else if (formattedAmount.length >= 9) {
+		amountFontSize = 120;
+	} else if (formattedAmount.length >= 8) {
+		amountFontSize = 130;
+	} else if (formattedAmount.length >= 7) {
+		amountFontSize = 140;
+	}
+
+	// ==================================================
+	// ESTIMATE AMOUNT WIDTH
+	// Used to position the Robux icon beside it.
+	// ==================================================
+
+	const estimatedAmountWidth =
+		formattedAmount.length *
+		amountFontSize *
+		0.60;
+
+	const iconSize = 100;
+	const iconGap = 28;
+
+	const totalCenterWidth =
+		estimatedAmountWidth +
+		iconGap +
+		iconSize;
+
+	const groupStart =
+		1024 - (totalCenterWidth / 2);
+
+	const amountX =
+		groupStart + (estimatedAmountWidth / 2);
+
+	const iconX =
+		groupStart +
+		estimatedAmountWidth +
+		iconGap;
+
+	const iconY = 82;
+
+	// ==================================================
 	// SVG
 	// ==================================================
 
@@ -175,287 +221,287 @@ async function createDonationCard({
 	xmlns="http://www.w3.org/2000/svg"
 >
 
-<defs>
+	<defs>
 
-	<!-- ========================================== -->
-	<!-- CIRCULAR AVATAR CLIPS -->
-	<!-- ========================================== -->
+		<!-- ========================================== -->
+		<!-- CIRCULAR AVATAR CLIPS -->
+		<!-- ========================================== -->
 
-	<clipPath id="leftAvatarClip">
-		<circle
-			cx="392"
-			cy="202"
-			r="121"
-		/>
-	</clipPath>
+		<clipPath id="leftAvatarClip">
+			<circle
+				cx="392"
+				cy="202"
+				r="121"
+			/>
+		</clipPath>
 
-	<clipPath id="rightAvatarClip">
-		<circle
-			cx="1660"
-			cy="202"
-			r="121"
-		/>
-	</clipPath>
+		<clipPath id="rightAvatarClip">
+			<circle
+				cx="1660"
+				cy="202"
+				r="121"
+			/>
+		</clipPath>
 
-	<!-- ========================================== -->
-	<!-- SOFT AVATAR GLOW -->
-	<!-- ========================================== -->
+		<!-- ========================================== -->
+		<!-- SOFT AVATAR GLOW -->
+		<!-- ========================================== -->
 
-	<filter
-		id="softGlow"
-		x="-100%"
-		y="-100%"
-		width="300%"
-		height="300%"
-	>
-		<feGaussianBlur
-			stdDeviation="10"
-		/>
-	</filter>
+		<filter
+			id="softGlow"
+			x="-100%"
+			y="-100%"
+			width="300%"
+			height="300%"
+		>
+			<feGaussianBlur
+				stdDeviation="10"
+			/>
+		</filter>
 
-</defs>
-
-
-<!-- ================================================= -->
-<!-- LEFT FAINT CIRCLE / GLOW -->
-<!-- ================================================= -->
-
-<circle
-	cx="392"
-	cy="202"
-	r="139"
-	fill="none"
-	stroke="${theme.accent}"
-	stroke-width="11"
-	opacity="0.10"
-	filter="url(#softGlow)"
-/>
-
-<circle
-	cx="392"
-	cy="202"
-	r="132"
-	fill="none"
-	stroke="${theme.accent}"
-	stroke-width="7"
-	opacity="0.10"
-/>
+	</defs>
 
 
-<!-- ================================================= -->
-<!-- RIGHT FAINT CIRCLE / GLOW -->
-<!-- ================================================= -->
+	<!-- ================================================= -->
+	<!-- LEFT AVATAR GLOW -->
+	<!-- ================================================= -->
 
-<circle
-	cx="1660"
-	cy="202"
-	r="139"
-	fill="none"
-	stroke="${theme.accent}"
-	stroke-width="11"
-	opacity="0.10"
-	filter="url(#softGlow)"
-/>
+	<circle
+		cx="392"
+		cy="202"
+		r="139"
+		fill="none"
+		stroke="${theme.accent}"
+		stroke-width="11"
+		opacity="0.10"
+		filter="url(#softGlow)"
+	/>
 
-<circle
-	cx="1660"
-	cy="202"
-	r="132"
-	fill="none"
-	stroke="${theme.accent}"
-	stroke-width="7"
-	opacity="0.10"
-/>
-
-
-<!-- ================================================= -->
-<!-- LEFT ROBLOX AVATAR -->
-<!-- ================================================= -->
-
-<image
-	href="data:image/png;base64,${donatorBase64}"
-	x="267"
-	y="77"
-	width="250"
-	height="250"
-	preserveAspectRatio="xMidYMid meet"
-	clip-path="url(#leftAvatarClip)"
-/>
-
-<circle
-	cx="392"
-	cy="202"
-	r="127"
-	fill="none"
-	stroke="${theme.avatarBorder}"
-	stroke-width="8"
-	opacity="0.95"
-/>
+	<circle
+		cx="392"
+		cy="202"
+		r="132"
+		fill="none"
+		stroke="${theme.accent}"
+		stroke-width="7"
+		opacity="0.10"
+	/>
 
 
-<!-- ================================================= -->
-<!-- RIGHT ROBLOX AVATAR -->
-<!-- ================================================= -->
+	<!-- ================================================= -->
+	<!-- RIGHT AVATAR GLOW -->
+	<!-- ================================================= -->
 
-<image
-	href="data:image/png;base64,${raiserBase64}"
-	x="1535"
-	y="77"
-	width="250"
-	height="250"
-	preserveAspectRatio="xMidYMid meet"
-	clip-path="url(#rightAvatarClip)"
-/>
+	<circle
+		cx="1660"
+		cy="202"
+		r="139"
+		fill="none"
+		stroke="${theme.accent}"
+		stroke-width="11"
+		opacity="0.10"
+		filter="url(#softGlow)"
+	/>
 
-<circle
-	cx="1660"
-	cy="202"
-	r="127"
-	fill="none"
-	stroke="${theme.avatarBorder}"
-	stroke-width="8"
-	opacity="0.95"
-/>
+	<circle
+		cx="1660"
+		cy="202"
+		r="132"
+		fill="none"
+		stroke="${theme.accent}"
+		stroke-width="7"
+		opacity="0.10"
+	/>
 
 
-<!-- ================================================= -->
-<!-- CENTERED ROBUX ICON + AMOUNT -->
-<!-- ================================================= -->
+	<!-- ================================================= -->
+	<!-- LEFT ROBLOX AVATAR -->
+	<!-- ================================================= -->
 
-<g transform="translate(1024 0)">
+	<image
+		href="data:image/png;base64,${donatorBase64}"
+		x="267"
+		y="77"
+		width="250"
+		height="250"
+		preserveAspectRatio="xMidYMid meet"
+		clip-path="url(#leftAvatarClip)"
+	/>
 
-	<!-- ROBUX ICON -->
-
-	<g
-		transform="translate(-300 65)"
-		fill="${theme.accent}"
-		stroke="#000000"
+	<circle
+		cx="392"
+		cy="202"
+		r="127"
+		fill="none"
+		stroke="${theme.avatarBorder}"
 		stroke-width="8"
-		stroke-linejoin="round"
-	>
+		opacity="0.95"
+	/>
 
-		<!-- Outer token -->
 
-		<polygon
-			points="
-			64,0
-			118,31
-			118,94
-			64,125
-			10,94
-			10,31
-			"
-		/>
+	<!-- ================================================= -->
+	<!-- RIGHT ROBLOX AVATAR -->
+	<!-- ================================================= -->
 
-		<!-- Inner token -->
+	<image
+		href="data:image/png;base64,${raiserBase64}"
+		x="1535"
+		y="77"
+		width="250"
+		height="250"
+		preserveAspectRatio="xMidYMid meet"
+		clip-path="url(#rightAvatarClip)"
+	/>
 
-		<polygon
-			points="
-			64,16
-			98,36
-			98,87
-			64,107
-			30,87
-			30,36
-			"
-			fill="none"
-		/>
+	<circle
+		cx="1660"
+		cy="202"
+		r="127"
+		fill="none"
+		stroke="${theme.avatarBorder}"
+		stroke-width="8"
+		opacity="0.95"
+	/>
 
-		<!-- Center -->
 
-		<rect
-			x="53"
-			y="51"
-			width="22"
-			height="22"
+	<!-- ================================================= -->
+	<!-- CENTRED AMOUNT + ROBUX ICON -->
+	<!-- ================================================= -->
+
+	<g>
+
+		<!-- DONATION AMOUNT -->
+
+		<text
+			x="${amountX}"
+			y="207"
+			text-anchor="middle"
+			font-family="Arial Black, Arial, Helvetica, sans-serif"
+			font-size="${amountFontSize}"
+			font-weight="900"
 			fill="${theme.accent}"
-		/>
+			stroke="#000000"
+			stroke-width="10"
+			stroke-linejoin="round"
+			paint-order="stroke fill"
+		>
+			${escapeXml(formattedAmount)}
+		</text>
+
+
+		<!-- ROBUX ICON -->
+
+		<g
+			transform="translate(${iconX} ${iconY}) scale(0.80)"
+			fill="${theme.accent}"
+			stroke="#000000"
+			stroke-width="8"
+			stroke-linejoin="round"
+		>
+
+			<!-- Outer token -->
+
+			<polygon
+				points="
+				64,0
+				118,31
+				118,94
+				64,125
+				10,94
+				10,31
+				"
+			/>
+
+			<!-- Inner token -->
+
+			<polygon
+				points="
+				64,16
+				98,36
+				98,87
+				64,107
+				30,87
+				30,36
+				"
+				fill="none"
+			/>
+
+			<!-- Center -->
+
+			<rect
+				x="53"
+				y="51"
+				width="22"
+				height="22"
+				fill="${theme.accent}"
+			/>
+
+		</g>
 
 	</g>
 
 
-	<!-- DONATION AMOUNT -->
+	<!-- ================================================= -->
+	<!-- DONATED TO -->
+	<!-- ================================================= -->
 
 	<text
-		x="0"
-		y="207"
+		x="1024"
+		y="327"
 		text-anchor="middle"
 		font-family="Arial Black, Arial, Helvetica, sans-serif"
-		font-size="150"
+		font-size="76"
 		font-weight="900"
-		fill="${theme.accent}"
+		fill="#FFFFFF"
 		stroke="#000000"
 		stroke-width="10"
 		stroke-linejoin="round"
 		paint-order="stroke fill"
 	>
-		${escapeXml(formattedAmount)}
+		donated to
 	</text>
 
-</g>
+
+	<!-- ================================================= -->
+	<!-- LEFT USERNAME -->
+	<!-- ================================================= -->
+
+	<text
+		x="392"
+		y="429"
+		text-anchor="middle"
+		font-family="Arial Black, Arial, Helvetica, sans-serif"
+		font-size="53"
+		font-weight="900"
+		fill="#FFFFFF"
+		stroke="#000000"
+		stroke-width="9"
+		stroke-linejoin="round"
+		paint-order="stroke fill"
+	>
+		@${escapeXml(donatorUsername)}
+	</text>
 
 
-<!-- ================================================= -->
-<!-- DONATED TO -->
-<!-- ================================================= -->
+	<!-- ================================================= -->
+	<!-- RIGHT USERNAME -->
+	<!-- ================================================= -->
 
-<text
-	x="1024"
-	y="327"
-	text-anchor="middle"
-	font-family="Arial Black, Arial, Helvetica, sans-serif"
-	font-size="76"
-	font-weight="900"
-	fill="#FFFFFF"
-	stroke="#000000"
-	stroke-width="10"
-	stroke-linejoin="round"
-	paint-order="stroke fill"
->
-	donated to
-</text>
-
-
-<!-- ================================================= -->
-<!-- LEFT USERNAME -->
-<!-- ================================================= -->
-
-<text
-	x="392"
-	y="429"
-	text-anchor="middle"
-	font-family="Arial Black, Arial, Helvetica, sans-serif"
-	font-size="53"
-	font-weight="900"
-	fill="#FFFFFF"
-	stroke="#000000"
-	stroke-width="9"
-	stroke-linejoin="round"
-	paint-order="stroke fill"
->
-	@${escapeXml(donatorUsername)}
-</text>
-
-
-<!-- ================================================= -->
-<!-- RIGHT USERNAME -->
-<!-- ================================================= -->
-
-<text
-	x="1660"
-	y="429"
-	text-anchor="middle"
-	font-family="Arial Black, Arial, Helvetica, sans-serif"
-	font-size="53"
-	font-weight="900"
-	fill="#FFFFFF"
-	stroke="#000000"
-	stroke-width="9"
-	stroke-linejoin="round"
-	paint-order="stroke fill"
->
-	@${escapeXml(raiserUsername)}
-</text>
+	<text
+		x="1660"
+		y="429"
+		text-anchor="middle"
+		font-family="Arial Black, Arial, Helvetica, sans-serif"
+		font-size="53"
+		font-weight="900"
+		fill="#FFFFFF"
+		stroke="#000000"
+		stroke-width="9"
+		stroke-linejoin="round"
+		paint-order="stroke fill"
+	>
+		@${escapeXml(raiserUsername)}
+	</text>
 
 </svg>
 `;
@@ -467,32 +513,26 @@ async function createDonationCard({
 	return await sharp(
 		Buffer.from(svg)
 	)
-	.png()
-	.toBuffer();
+		.png()
+		.toBuffer();
 }
-
 
 // ======================================================
 // HOMEPAGE
 // ======================================================
 
 app.get("/", (req, res) => {
-
 	res.send(
 		"Roblox Donation Card API is online."
 	);
-
 });
-
 
 // ======================================================
 // DONATION ENDPOINT
 // ======================================================
 
 app.post("/donation", async (req, res) => {
-
 	try {
-
 		const {
 			DonatorName,
 			RaiserName,
@@ -500,7 +540,6 @@ app.post("/donation", async (req, res) => {
 			DonatorId,
 			RaiserId
 		} = req.body;
-
 
 		// ==============================================
 		// VALIDATION
@@ -513,14 +552,11 @@ app.post("/donation", async (req, res) => {
 			!DonatorId ||
 			!RaiserId
 		) {
-
 			return res.status(400).json({
 				success: false,
 				error: "Missing donation data"
 			});
-
 		}
-
 
 		const amount =
 			Number(Amount);
@@ -531,41 +567,33 @@ app.post("/donation", async (req, res) => {
 		const raiserId =
 			Number(RaiserId);
 
-
 		if (
 			!Number.isFinite(amount) ||
 			!Number.isInteger(donatorId) ||
 			!Number.isInteger(raiserId)
 		) {
-
 			return res.status(400).json({
 				success: false,
 				error: "Invalid donation data"
 			});
-
 		}
-
 
 		// ==============================================
 		// 100K MINIMUM
 		// ==============================================
 
 		if (amount < 100000) {
-
 			return res.json({
 				success: true,
 				ignored: true
 			});
-
 		}
-
 
 		// ==============================================
 		// WEBHOOK CHECK
 		// ==============================================
 
 		if (!DISCORD_WEBHOOK_URL) {
-
 			console.error(
 				"DISCORD_WEBHOOK_URL is missing"
 			);
@@ -574,9 +602,7 @@ app.post("/donation", async (req, res) => {
 				success: false,
 				error: "Webhook not configured"
 			});
-
 		}
-
 
 		// ==============================================
 		// CREATE CARD
@@ -591,7 +617,6 @@ app.post("/donation", async (req, res) => {
 				raiserId: raiserId
 			});
 
-
 		// ==============================================
 		// DISCORD WEBHOOK
 		// ==============================================
@@ -599,9 +624,7 @@ app.post("/donation", async (req, res) => {
 		const form =
 			new FormData();
 
-
 		const discordPayload = {
-
 			username: "Donation Logs",
 
 			content:
@@ -610,9 +633,7 @@ app.post("/donation", async (req, res) => {
 				`to **${RaiserName}**`,
 
 			embeds: [
-
 				{
-
 					color:
 						getDiscordColor(amount),
 
@@ -626,23 +647,18 @@ app.post("/donation", async (req, res) => {
 
 					timestamp:
 						new Date().toISOString()
-
 				}
-
 			],
 
 			allowed_mentions: {
 				parse: []
 			}
-
 		};
-
 
 		form.append(
 			"payload_json",
 			JSON.stringify(discordPayload)
 		);
-
 
 		form.append(
 			"files[0]",
@@ -655,7 +671,6 @@ app.post("/donation", async (req, res) => {
 			"donation.png"
 		);
 
-
 		const discordResponse =
 			await fetch(
 				DISCORD_WEBHOOK_URL,
@@ -665,9 +680,7 @@ app.post("/donation", async (req, res) => {
 				}
 			);
 
-
 		if (!discordResponse.ok) {
-
 			const error =
 				await discordResponse.text();
 
@@ -680,9 +693,7 @@ app.post("/donation", async (req, res) => {
 				success: false,
 				error: "Discord webhook failed"
 			});
-
 		}
-
 
 		console.log(
 			`${DonatorName} donated ` +
@@ -690,14 +701,11 @@ app.post("/donation", async (req, res) => {
 			`to ${RaiserName}`
 		);
 
-
 		return res.json({
 			success: true
 		});
 
-
 	} catch (error) {
-
 		console.error(
 			"Donation error:",
 			error
@@ -707,18 +715,14 @@ app.post("/donation", async (req, res) => {
 			success: false,
 			error: "Internal server error"
 		});
-
 	}
-
 });
-
 
 // ======================================================
 // DISCORD EMBED COLOR
 // ======================================================
 
 function getDiscordColor(amount) {
-
 	if (amount < 1_000_000) {
 		return 0xFF4FA3;
 	}
@@ -733,7 +737,6 @@ function getDiscordColor(amount) {
 
 	return 0xA855F7;
 }
-
 
 // ======================================================
 // START SERVER
