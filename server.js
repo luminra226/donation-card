@@ -53,7 +53,6 @@ async function getRobloxAvatar(userId) {
 	);
 }
 
-
 // ======================================================
 // ESCAPE SVG TEXT
 // ======================================================
@@ -67,7 +66,6 @@ function escapeXml(value) {
 		.replace(/'/g, "&apos;");
 }
 
-
 // ======================================================
 // REMOVE EXTRA @
 // ======================================================
@@ -75,7 +73,6 @@ function escapeXml(value) {
 function cleanUsername(name) {
 	return String(name).replace(/^@+/, "");
 }
-
 
 // ======================================================
 // DONATION THEME
@@ -114,7 +111,6 @@ function getDonationTheme(amount) {
 	};
 }
 
-
 // ======================================================
 // CREATE DONATION CARD
 // ======================================================
@@ -135,7 +131,6 @@ async function createDonationCard({
 		getRobloxAvatar(raiserId)
 	]);
 
-
 	// ==================================================
 	// RESIZE AVATARS
 	// ==================================================
@@ -150,29 +145,23 @@ async function createDonationCard({
 		.png()
 		.toBuffer();
 
-
 	const donatorBase64 =
 		donatorPng.toString("base64");
 
 	const raiserBase64 =
 		raiserPng.toString("base64");
 
-
 	const formattedAmount =
 		Number(amount).toLocaleString("en-US");
-
 
 	const theme =
 		getDonationTheme(amount);
 
-
 	const donatorUsername =
 		cleanUsername(donatorName);
 
-
 	const raiserUsername =
 		cleanUsername(raiserName);
-
 
 	// ==================================================
 	// SVG
@@ -208,7 +197,6 @@ async function createDonationCard({
 		/>
 	</clipPath>
 
-
 	<!-- ========================================== -->
 	<!-- SOFT AVATAR GLOW -->
 	<!-- ========================================== -->
@@ -220,19 +208,12 @@ async function createDonationCard({
 		width="300%"
 		height="300%"
 	>
-
 		<feGaussianBlur
 			stdDeviation="10"
 		/>
-
 	</filter>
 
 </defs>
-
-
-<!-- ================================================= -->
-<!-- COMPLETELY TRANSPARENT BACKGROUND -->
-<!-- ================================================= -->
 
 
 <!-- ================================================= -->
@@ -301,9 +282,6 @@ async function createDonationCard({
 	clip-path="url(#leftAvatarClip)"
 />
 
-
-<!-- Avatar border -->
-
 <circle
 	cx="392"
 	cy="202"
@@ -329,9 +307,6 @@ async function createDonationCard({
 	clip-path="url(#rightAvatarClip)"
 />
 
-
-<!-- Avatar border -->
-
 <circle
 	cx="1660"
 	cy="202"
@@ -344,63 +319,10 @@ async function createDonationCard({
 
 
 <!-- ================================================= -->
-<!-- ROBUX ICON -->
+<!-- CENTERED ROBUX ICON + AMOUNT -->
 <!-- ================================================= -->
 
-<g
-	transform="translate(690 65)"
-	fill="${theme.accent}"
-	stroke="#000000"
-	stroke-width="8"
-	stroke-linejoin="round"
->
-
-	<!-- Outer token -->
-
-	<polygon
-		points="
-		64,0
-		118,31
-		118,94
-		64,125
-		10,94
-		10,31
-		"
-	/>
-
-	<!-- Inner token -->
-
-	<polygon
-		points="
-		64,16
-		98,36
-		98,87
-		64,107
-		30,87
-		30,36
-		"
-		fill="none"
-	/>
-
-	<!-- Center -->
-
-	<rect
-		x="53"
-		y="51"
-		width="22"
-		height="22"
-		fill="${theme.accent}"
-	/>
-
-</g>
-
-<!-- ================================================= -->
-<!-- CENTERED ROBUX ICON + DONATION AMOUNT -->
-<!-- ================================================= -->
-
-<g
-	transform="translate(1024 0)"
->
+<g transform="translate(1024 0)">
 
 	<!-- ROBUX ICON -->
 
@@ -474,6 +396,27 @@ async function createDonationCard({
 
 
 <!-- ================================================= -->
+<!-- DONATED TO -->
+<!-- ================================================= -->
+
+<text
+	x="1024"
+	y="327"
+	text-anchor="middle"
+	font-family="Arial Black, Arial, Helvetica, sans-serif"
+	font-size="76"
+	font-weight="900"
+	fill="#FFFFFF"
+	stroke="#000000"
+	stroke-width="10"
+	stroke-linejoin="round"
+	paint-order="stroke fill"
+>
+	donated to
+</text>
+
+
+<!-- ================================================= -->
 <!-- LEFT USERNAME -->
 <!-- ================================================= -->
 
@@ -516,7 +459,6 @@ async function createDonationCard({
 
 </svg>
 `;
-
 
 	// ==================================================
 	// RENDER PNG
@@ -642,17 +584,11 @@ app.post("/donation", async (req, res) => {
 
 		const card =
 			await createDonationCard({
-
 				donatorName: DonatorName,
-
 				raiserName: RaiserName,
-
 				amount: amount,
-
 				donatorId: donatorId,
-
 				raiserId: raiserId
-
 			});
 
 
