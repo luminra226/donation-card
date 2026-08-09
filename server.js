@@ -13,7 +13,6 @@ const DISCORD_WEBHOOK_URL = process.env.DISCORD_WEBHOOK_URL;
 // ======================================================
 
 	async function getRobloxAvatar(userId) {
-
 		const url =
 		`https://thumbnails.roblox.com/v1/users/avatar-headshot` +
 		`?userIds=${encodeURIComponent(userId)}` +
@@ -24,34 +23,22 @@ const DISCORD_WEBHOOK_URL = process.env.DISCORD_WEBHOOK_URL;
 		const response = await fetch(url);
 
 		if (!response.ok) {
-			throw new Error(
-				`Roblox thumbnail API returned ${response.status}`
-			);
+			throw new Error(`Roblox thumbnail API returned ${response.status}`);
 			}
 
 			const json = await response.json();
 
-			if (
-				!json.data ||
-				!json.data[0] ||
-				!json.data[0].imageUrl
-				) {
-					throw new Error("Roblox avatar not found");
+			if (!json.data || !json.data[0] || !json.data[0].imageUrl) {
+				throw new Error("Roblox avatar not found");
 				}
 
-				const imageResponse = await fetch(
-					json.data[0].imageUrl
-				);
+				const imageResponse = await fetch(json.data[0].imageUrl);
 
 				if (!imageResponse.ok) {
-					throw new Error(
-						`Avatar image returned ${imageResponse.status}`
-					);
+					throw new Error(`Avatar image returned ${imageResponse.status}`);
 					}
 
-					return Buffer.from(
-						await imageResponse.arrayBuffer()
-					);
+					return Buffer.from(await imageResponse.arrayBuffer());
 					}
 
 		// ======================================================
@@ -59,7 +46,6 @@ const DISCORD_WEBHOOK_URL = process.env.DISCORD_WEBHOOK_URL;
 		// ======================================================
 
 		function escapeXml(value) {
-
 			return String(value)
 			.replace(/&/g, "&amp;")
 			.replace(/</g, "&lt;")
@@ -73,9 +59,7 @@ const DISCORD_WEBHOOK_URL = process.env.DISCORD_WEBHOOK_URL;
 			// ======================================================
 
 			function cleanUsername(name) {
-
-				return String(name)
-				.replace(/^@+/, "");
+				return String(name).replace(/^@+/, "");
 				}
 
 				// ======================================================
@@ -83,37 +67,32 @@ const DISCORD_WEBHOOK_URL = process.env.DISCORD_WEBHOOK_URL;
 				// ======================================================
 
 				function getDonationTheme(amount) {
-
-					// 100,000 - 999,999 — PINK
 					if (amount < 1_000_000) {
 						return {
 							accent: "#FF4FA3",
 							avatarBorder: "#FFB6DC"
 						};
+					}
+
+					if (amount < 10_000_000) {
+						return {
+							accent: "#FF1717",
+							avatarBorder: "#FF7777"
+						};
 						}
 
-						// 1,000,000 - 9,999,999 — RED
-						if (amount < 10_000_000) {
+						if (amount < 100_000_000) {
 							return {
-								accent: "#FF1717",
-								avatarBorder: "#FF7777"
+								accent: "#B00000",
+								avatarBorder: "#E44A4A"
 							};
 							}
 
-							// 10,000,000 - 99,999,999 — DEEP RED
-							if (amount < 100_000_000) {
-								return {
-									accent: "#B00000",
-									avatarBorder: "#E44A4A"
-								};
-								}
-
-								// 100,000,000+ — PURPLE
-								return {
-									accent: "#A855F7",
-									avatarBorder: "#D19AFF"
-								};
-								}
+							return {
+								accent: "#A855F7",
+								avatarBorder: "#D19AFF"
+							};
+							}
 
 					// ======================================================
 					// CREATE DONATION CARD
@@ -126,53 +105,35 @@ const DISCORD_WEBHOOK_URL = process.env.DISCORD_WEBHOOK_URL;
 						donatorId,
 						raiserId
 						}) {
-
-						const [
-						donatorAvatar,
-						raiserAvatar
-						] = await Promise.all([
-
+						const [donatorAvatar, raiserAvatar] = await Promise.all([
 							getRobloxAvatar(donatorId),
-
 							getRobloxAvatar(raiserId)
-
 							]);
 
 						// ==================================================
 						// RESIZE AVATARS
 						// ==================================================
 
-						const donatorPng = await sharp(
-							donatorAvatar
-						)
+						const donatorPng = await sharp(donatorAvatar)
 						.resize(290, 290)
 						.png()
 						.toBuffer();
 
-						const raiserPng = await sharp(
-							raiserAvatar
-						)
+						const raiserPng = await sharp(raiserAvatar)
 						.resize(290, 290)
 						.png()
 						.toBuffer();
 
-						const donatorBase64 =
-						donatorPng.toString("base64");
-
-						const raiserBase64 =
-						raiserPng.toString("base64");
+						const donatorBase64 = donatorPng.toString("base64");
+						const raiserBase64 = raiserPng.toString("base64");
 
 						const formattedAmount =
 						Number(amount).toLocaleString("en-US");
 
-						const theme =
-						getDonationTheme(amount);
+						const theme = getDonationTheme(amount);
 
-						const donatorUsername =
-						cleanUsername(donatorName);
-
-						const raiserUsername =
-						cleanUsername(raiserName);
+						const donatorUsername = cleanUsername(donatorName);
+						const raiserUsername = cleanUsername(raiserName);
 
 						// ==================================================
 						// SVG
@@ -188,9 +149,7 @@ const DISCORD_WEBHOOK_URL = process.env.DISCORD_WEBHOOK_URL;
 
 						<defs>
 
-						<!-- ========================================== -->
 						<!-- CIRCULAR AVATAR CLIPS -->
-						<!-- ========================================== -->
 
 						<clipPath id="leftAvatarClip">
 						<circle
@@ -208,9 +167,7 @@ const DISCORD_WEBHOOK_URL = process.env.DISCORD_WEBHOOK_URL;
 						/>
 						</clipPath>
 
-						<!-- ========================================== -->
 						<!-- SOFT AVATAR GLOW -->
-						<!-- ========================================== -->
 
 						<filter
 						id="softGlow"
@@ -219,11 +176,7 @@ const DISCORD_WEBHOOK_URL = process.env.DISCORD_WEBHOOK_URL;
 						width="300%"
 						height="300%"
 						>
-
-						<feGaussianBlur
-						stdDeviation="10"
-						/>
-
+						<feGaussianBlur stdDeviation="10"/>
 						</filter>
 
 						</defs>
@@ -232,15 +185,6 @@ const DISCORD_WEBHOOK_URL = process.env.DISCORD_WEBHOOK_URL;
 						<!-- ================================================= -->
 						<!-- COMPLETELY TRANSPARENT BACKGROUND -->
 						<!-- ================================================= -->
-
-						<!--
-						Nothing is drawn here.
-						The entire SVG background is transparent.
-						There is NO background colour.
-						There is NO gradient.
-						There are NO horizontal lines.
-						There is NO top edge.
-						-->
 
 
 						<!-- ================================================= -->
@@ -309,8 +253,6 @@ const DISCORD_WEBHOOK_URL = process.env.DISCORD_WEBHOOK_URL;
 						clip-path="url(#leftAvatarClip)"
 						/>
 
-						<!-- Avatar border -->
-
 						<circle
 						cx="392"
 						cy="202"
@@ -336,8 +278,6 @@ const DISCORD_WEBHOOK_URL = process.env.DISCORD_WEBHOOK_URL;
 						clip-path="url(#rightAvatarClip)"
 						/>
 
-						<!-- Avatar border -->
-
 						<circle
 						cx="1660"
 						cy="202"
@@ -350,69 +290,28 @@ const DISCORD_WEBHOOK_URL = process.env.DISCORD_WEBHOOK_URL;
 
 
 						<!-- ================================================= -->
-						<!-- ROBUX ICON + DONATION AMOUNT -->
+						<!-- CENTERED DONATION AMOUNT -->
 						<!-- ================================================= -->
 
-						<!-- ROBUX ICON -->
-
-						<g
-						transform="translate(690 65)"
-						fill="${theme.accent}"
-						stroke="#000000"
-						stroke-width="8"
-						stroke-linejoin="round"
-						>
-
-						<!-- Outer token -->
-
-						<polygon
-						points="
-						64,0
-						118,31
-						118,94
-						64,125
-						10,94
-						10,31
-						"
-						/>
-
-						<!-- Inner token -->
-
-						<polygon
-						points="
-						64,16
-						98,36
-						98,87
-						64,107
-						30,87
-						30,36
-						"
-						fill="none"
-						/>
-
-						<!-- Center -->
-
-						<rect
-						x="53"
-						y="51"
-						width="22"
-						height="22"
-						fill="${theme.accent}"
-						/>
-
-						</g>
-
-
+						```javascript
 						<!-- ================================================= -->
-						<!-- DONATION AMOUNT -->
+						<!-- CENTERED DONATION AMOUNT -->
 						<!-- ================================================= -->
 
 						<text
-						x="850"
+						x="1024"
 						y="207"
-						text-anchor="start"
+						text-anchor="middle"
 						font-family="Arial Black, Arial, Helvetica, sans-serif"
-						font-size="150"
+						font-size="${
+						formattedAmount.length <= 6
+						? 150
+						: formattedAmount.length <= 8
+						? 135
+						: formattedAmount.length <= 10
+						? 115
+						: 95
+						}"
 						font-weight="900"
 						fill="${theme.accent}"
 						stroke="#000000"
@@ -422,6 +321,8 @@ const DISCORD_WEBHOOK_URL = process.env.DISCORD_WEBHOOK_URL;
 						>
 						${escapeXml(formattedAmount)}
 						</text>
+						```
+
 
 
 						<!-- ================================================= -->
@@ -493,9 +394,7 @@ const DISCORD_WEBHOOK_URL = process.env.DISCORD_WEBHOOK_URL;
 						// RENDER PNG
 						// ==================================================
 
-						return await sharp(
-							Buffer.from(svg)
-						)
+						return await sharp(Buffer.from(svg))
 						.png()
 						.toBuffer();
 						}
@@ -506,11 +405,7 @@ const DISCORD_WEBHOOK_URL = process.env.DISCORD_WEBHOOK_URL;
 						// ======================================================
 
 						app.get("/", (req, res) => {
-
-							res.send(
-								"Roblox Donation Card API is online."
-							);
-
+							res.send("Roblox Donation Card API is online.");
 						});
 
 
@@ -519,9 +414,7 @@ const DISCORD_WEBHOOK_URL = process.env.DISCORD_WEBHOOK_URL;
 						// ======================================================
 
 						app.post("/donation", async (req, res) => {
-
 							try {
-
 								const {
 									DonatorName,
 									RaiserName,
@@ -529,7 +422,6 @@ const DISCORD_WEBHOOK_URL = process.env.DISCORD_WEBHOOK_URL;
 									DonatorId,
 									RaiserId
 								} = req.body;
-
 
 								// ==============================================
 								// VALIDATION
@@ -542,101 +434,70 @@ const DISCORD_WEBHOOK_URL = process.env.DISCORD_WEBHOOK_URL;
 									!DonatorId ||
 									!RaiserId
 								) {
-
 									return res.status(400).json({
 										success: false,
 										error: "Missing donation data"
 									});
-
 								}
 
-
-								const amount =
-								Number(Amount);
-
-								const donatorId =
-								Number(DonatorId);
-
-								const raiserId =
-								Number(RaiserId);
-
+								const amount = Number(Amount);
+								const donatorId = Number(DonatorId);
+								const raiserId = Number(RaiserId);
 
 								if (
 									!Number.isFinite(amount) ||
 									!Number.isInteger(donatorId) ||
 									!Number.isInteger(raiserId)
 									) {
-
 										return res.status(400).json({
 											success: false,
 											error: "Invalid donation data"
 										});
-
 									}
-
 
 									// ==============================================
 									// 100K MINIMUM
 									// ==============================================
 
 									if (amount < 100000) {
-
 										return res.json({
 											success: true,
 											ignored: true
 										});
-
 									}
-
 
 									// ==============================================
 									// WEBHOOK CHECK
 									// ==============================================
 
 									if (!DISCORD_WEBHOOK_URL) {
-
-										console.error(
-											"DISCORD_WEBHOOK_URL is missing"
-										);
+										console.error("DISCORD_WEBHOOK_URL is missing");
 
 										return res.status(500).json({
 											success: false,
 											error: "Webhook not configured"
 										});
-
 									}
-
 
 									// ==============================================
 									// CREATE CARD
 									// ==============================================
 
-									const card =
-									await createDonationCard({
-
+									const card = await createDonationCard({
 										donatorName: DonatorName,
-
 										raiserName: RaiserName,
-
 										amount: amount,
-
 										donatorId: donatorId,
-
 										raiserId: raiserId
-
 									});
-
 
 									// ==============================================
 									// DISCORD WEBHOOK
 									// ==============================================
 
-									const form =
-									new FormData();
-
+									const form = new FormData();
 
 									const discordPayload = {
-
 										username: "Donation Logs",
 
 										content:
@@ -645,11 +506,8 @@ const DISCORD_WEBHOOK_URL = process.env.DISCORD_WEBHOOK_URL;
 										`to **${RaiserName}**`,
 
 										embeds: [
-
 										{
-
-											color:
-											getDiscordColor(amount),
+											color: getDiscordColor(amount),
 
 											image: {
 												url: "attachment://donation.png"
@@ -659,59 +517,41 @@ const DISCORD_WEBHOOK_URL = process.env.DISCORD_WEBHOOK_URL;
 												text: "Roblox Donation"
 											},
 
-											timestamp:
-											new Date().toISOString()
-
+											timestamp: new Date().toISOString()
 										}
-
 										],
 
 										allowed_mentions: {
 											parse: []
 										}
-
 									};
-
 
 									form.append(
 										"payload_json",
 										JSON.stringify(discordPayload)
 									);
 
-
 									form.append(
-
 										"files[0]",
-
 										new Blob(
 											[card],
 											{
 												type: "image/png"
 											}
 										),
-
 										"donation.png"
-
 									);
 
-
-									const discordResponse =
-									await fetch(
-
+									const discordResponse = await fetch(
 										DISCORD_WEBHOOK_URL,
-
 										{
 											method: "POST",
 											body: form
 										}
-
 									);
 
-
 									if (!discordResponse.ok) {
-
-										const error =
-										await discordResponse.text();
+										const error = await discordResponse.text();
 
 										console.error(
 											"Discord error:",
@@ -722,9 +562,7 @@ const DISCORD_WEBHOOK_URL = process.env.DISCORD_WEBHOOK_URL;
 											success: false,
 											error: "Discord webhook failed"
 										});
-
 										}
-
 
 										console.log(
 											`${DonatorName} donated ` +
@@ -732,14 +570,11 @@ const DISCORD_WEBHOOK_URL = process.env.DISCORD_WEBHOOK_URL;
 											`to ${RaiserName}`
 										);
 
-
 										return res.json({
 											success: true
 										});
 
-
 							} catch (error) {
-
 								console.error(
 									"Donation error:",
 									error
@@ -749,9 +584,7 @@ const DISCORD_WEBHOOK_URL = process.env.DISCORD_WEBHOOK_URL;
 									success: false,
 									error: "Internal server error"
 								});
-
 							}
-
 						});
 
 
@@ -760,7 +593,6 @@ const DISCORD_WEBHOOK_URL = process.env.DISCORD_WEBHOOK_URL;
 						// ======================================================
 
 						function getDiscordColor(amount) {
-
 							if (amount < 1_000_000) {
 								return 0xFF4FA3;
 							}
@@ -782,17 +614,12 @@ const DISCORD_WEBHOOK_URL = process.env.DISCORD_WEBHOOK_URL;
 							// ======================================================
 
 							app.listen(
-
 								PORT,
-
 								"0.0.0.0",
-
 								() => {
-
 									console.log(
 										`Server running on port ${PORT}`
 									);
-
 								}
-
 							);
+
