@@ -83,14 +83,12 @@ function getDonationTheme(amount) {
         return {
             name: "Pink",
 
-            background1: "#4b102e",
-            background2: "#180711",
+            background1: "#d02c81",
 
             primary1: "#ff4fa3",
             primary2: "#ff8bc4",
 
-            border: "#ff4fa3",
-            glow: "#ff4fa3"
+            glow: "#ff4fa3",
         };
     }
 
@@ -102,13 +100,11 @@ function getDonationTheme(amount) {
             name: "Red",
 
             background1: "#4b1010",
-            background2: "#180707",
 
             primary1: "#ff2020",
             primary2: "#ff5a5a",
 
-            border: "#ff2424",
-            glow: "#ff2020"
+            glow: "#ff2020",
         };
     }
 
@@ -120,13 +116,11 @@ function getDonationTheme(amount) {
             name: "Deep Red",
 
             background1: "#5c0808",
-            background2: "#160202",
 
             primary1: "#ff0000",
             primary2: "#ff3838",
 
-            border: "#ff1010",
-            glow: "#ff0000"
+            glow: "#ff0000",
         };
     }
 
@@ -137,13 +131,11 @@ function getDonationTheme(amount) {
         name: "Purple",
 
         background1: "#35105c",
-        background2: "#10051c",
 
         primary1: "#a855f7",
         primary2: "#d084ff",
 
-        border: "#a855f7",
-        glow: "#a855f7"
+        glow: "#a855f7",
     };
 }
 
@@ -235,11 +227,6 @@ async function createDonationCard({
             <stop
                 offset="0%"
                 stop-color="${theme.background1}"
-            />
-
-            <stop
-                offset="100%"
-                stop-color="${theme.background2}"
             />
 
         </linearGradient>
@@ -373,8 +360,6 @@ async function createDonationCard({
         height="350"
         rx="18"
         fill="none"
-        stroke="${theme.border}"
-        stroke-width="4"
         opacity="0.95"
     />
 
@@ -913,34 +898,10 @@ app.post("/donation", async (req, res) => {
 // ======================================================
 
 function getDiscordColor(amount) {
-
-    if (amount > 1000000) {
-
-        // Pink
-        return 0xFF4FA3;
-
-    }
-
-
-    if (amount > 10000000) {
-
-        // Red
-        return 0xFF2020;
-
-    }
-
-
-    if (amount > 100000000) {
-
-        // Deep red
-        return 0xFF0000;
-
-    }
-
-
-    // Purple
+    if (amount < 1_000_000) return 0xFF4FA3;
+    if (amount < 10_000_000) return 0xFF2020;
+    if (amount < 100_000_000) return 0xFF0000;
     return 0xA855F7;
-
 }
 
 
