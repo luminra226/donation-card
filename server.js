@@ -1,4 +1,3 @@
-```javascript
 const express = require("express");
 const sharp = require("sharp");
 
@@ -759,4 +758,3 @@ app.listen(
 		);
 	}
 );
-```
