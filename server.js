@@ -1,4 +1,4 @@
-```js
+```javascript
 const express = require("express");
 const sharp = require("sharp");
 
@@ -81,7 +81,7 @@ function cleanUsername(name) {
 
 function getDonationTheme(amount) {
 
-	// 100,000 - 999,999 — PINK
+	// 100,000 - 999,999
 	if (amount < 1_000_000) {
 		return {
 			accent: "#FF4FA3",
@@ -89,7 +89,7 @@ function getDonationTheme(amount) {
 		};
 	}
 
-	// 1,000,000 - 9,999,999 — RED
+	// 1,000,000 - 9,999,999
 	if (amount < 10_000_000) {
 		return {
 			accent: "#FF1717",
@@ -97,7 +97,7 @@ function getDonationTheme(amount) {
 		};
 	}
 
-	// 10,000,000 - 99,999,999 — DEEP RED
+	// 10,000,000 - 99,999,999
 	if (amount < 100_000_000) {
 		return {
 			accent: "#B00000",
@@ -105,7 +105,7 @@ function getDonationTheme(amount) {
 		};
 	}
 
-	// 100,000,000+ — PURPLE
+	// 100,000,000+
 	return {
 		accent: "#A855F7",
 		avatarBorder: "#D19AFF"
@@ -165,7 +165,7 @@ async function createDonationCard({
 		cleanUsername(raiserName);
 
 	// ==================================================
-	// AMOUNT SIZE
+	// AMOUNT FONT SIZE
 	// ==================================================
 
 	let amountFontSize = 150;
@@ -181,6 +181,43 @@ async function createDonationCard({
 	}
 
 	// ==================================================
+	// ROBUX ICON POSITION
+	//
+	// The icon is now calculated AFTER the amount.
+	// It is vertically centred with the amount.
+	// ==================================================
+
+	const estimatedAmountWidth =
+		formattedAmount.length *
+		amountFontSize *
+		0.60;
+
+	const iconSize = 102;
+	const iconGap = 35;
+
+	const totalCenterWidth =
+		estimatedAmountWidth +
+		iconGap +
+		iconSize;
+
+	const groupStart =
+		1024 - (totalCenterWidth / 2);
+
+	// Amount sits on the left
+	const amountX =
+		groupStart +
+		(estimatedAmountWidth / 2);
+
+	// Icon sits directly to the RIGHT of amount
+	const iconX =
+		groupStart +
+		estimatedAmountWidth +
+		iconGap;
+
+	// Vertically centred with amount
+	const iconY = 100;
+
+	// ==================================================
 	// SVG
 	// ==================================================
 
@@ -194,9 +231,7 @@ async function createDonationCard({
 
 	<defs>
 
-		<!-- ========================================== -->
 		<!-- CIRCULAR AVATAR CLIPS -->
-		<!-- ========================================== -->
 
 		<clipPath id="leftAvatarClip">
 			<circle
@@ -214,9 +249,7 @@ async function createDonationCard({
 			/>
 		</clipPath>
 
-		<!-- ========================================== -->
 		<!-- SOFT AVATAR GLOW -->
-		<!-- ========================================== -->
 
 		<filter
 			id="softGlow"
@@ -336,11 +369,11 @@ async function createDonationCard({
 
 
 	<!-- ================================================= -->
-	<!-- CENTRED DONATION AMOUNT -->
+	<!-- DONATION AMOUNT -->
 	<!-- ================================================= -->
 
 	<text
-		x="1024"
+		x="${amountX}"
 		y="207"
 		text-anchor="middle"
 		font-family="Arial Black, Arial, Helvetica, sans-serif"
@@ -354,6 +387,59 @@ async function createDonationCard({
 	>
 		${escapeXml(formattedAmount)}
 	</text>
+
+
+	<!-- ================================================= -->
+	<!-- ROBUX ICON -->
+	<!-- NOW DIRECTLY BESIDE THE AMOUNT -->
+	<!-- ================================================= -->
+
+	<g
+		transform="translate(${iconX} ${iconY}) scale(0.80)"
+		fill="${theme.accent}"
+		stroke="#000000"
+		stroke-width="8"
+		stroke-linejoin="round"
+	>
+
+		<!-- Outer token -->
+
+		<polygon
+			points="
+				64,0
+				118,31
+				118,94
+				64,125
+				10,94
+				10,31
+			"
+		/>
+
+		<!-- Inner token -->
+
+		<polygon
+			points="
+				64,16
+				98,36
+				98,87
+				64,107
+				30,87
+				30,36
+			"
+			fill="none"
+		/>
+
+		<!-- Center -->
+
+		<rect
+			x="53"
+			y="51"
+			width="22"
+			height="22"
+			fill="${theme.accent}"
+		/>
+
+	</g>
 
 
 	<!-- ================================================= -->
@@ -511,6 +597,7 @@ app.post("/donation", async (req, res) => {
 		// ==============================================
 
 		if (!DISCORD_WEBHOOK_URL) {
+
 			console.error(
 				"DISCORD_WEBHOOK_URL is missing"
 			);
