@@ -394,47 +394,83 @@ async function createDonationCard({
 
 </g>
 
-
 <!-- ================================================= -->
-<!-- CENTERED DONATION AMOUNT -->
+<!-- CENTERED ROBUX ICON + DONATION AMOUNT -->
 <!-- ================================================= -->
 
-<text
-	x="1024"
-	y="207"
-	text-anchor="middle"
-	font-family="Arial Black, Arial, Helvetica, sans-serif"
-	font-size="150"
-	font-weight="900"
-	fill="${theme.accent}"
-	stroke="#000000"
-	stroke-width="10"
-	stroke-linejoin="round"
-	paint-order="stroke fill"
+<g
+	transform="translate(1024 0)"
 >
-	${escapeXml(formattedAmount)}
-</text>
+
+	<!-- ROBUX ICON -->
+
+	<g
+		transform="translate(-300 65)"
+		fill="${theme.accent}"
+		stroke="#000000"
+		stroke-width="8"
+		stroke-linejoin="round"
+	>
+
+		<!-- Outer token -->
+
+		<polygon
+			points="
+			64,0
+			118,31
+			118,94
+			64,125
+			10,94
+			10,31
+			"
+		/>
+
+		<!-- Inner token -->
+
+		<polygon
+			points="
+			64,16
+			98,36
+			98,87
+			64,107
+			30,87
+			30,36
+			"
+			fill="none"
+		/>
+
+		<!-- Center -->
+
+		<rect
+			x="53"
+			y="51"
+			width="22"
+			height="22"
+			fill="${theme.accent}"
+		/>
+
+	</g>
 
 
-<!-- ================================================= -->
-<!-- DONATED TO -->
-<!-- ================================================= -->
+	<!-- DONATION AMOUNT -->
 
-<text
-	x="1024"
-	y="327"
-	text-anchor="middle"
-	font-family="Arial Black, Arial, Helvetica, sans-serif"
-	font-size="76"
-	font-weight="900"
-	fill="#FFFFFF"
-	stroke="#000000"
-	stroke-width="10"
-	stroke-linejoin="round"
-	paint-order="stroke fill"
->
-	donated to
-</text>
+	<text
+		x="0"
+		y="207"
+		text-anchor="middle"
+		font-family="Arial Black, Arial, Helvetica, sans-serif"
+		font-size="150"
+		font-weight="900"
+		fill="${theme.accent}"
+		stroke="#000000"
+		stroke-width="10"
+		stroke-linejoin="round"
+		paint-order="stroke fill"
+	>
+		${escapeXml(formattedAmount)}
+	</text>
+
+</g>
 
 
 <!-- ================================================= -->
