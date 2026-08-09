@@ -99,7 +99,7 @@ function getDonationTheme(amount) {
 	// 10,000,000 - 99,999,999
 	if (amount < 100_000_000) {
 		return {
-			accent: "##ffaa00",
+			accent: "#ffaa00",
 			avatarBorder: "#e4ae41"
 		};
 	}
