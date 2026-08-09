@@ -411,7 +411,7 @@ async function getRobloxAvatar(userId) {
 						<text
 						x="1024"
 						y="207"
-						text-anchor="middle"
+						text-anchor="start"
 						font-family="Arial Black, Arial, Helvetica, sans-serif"
 						font-size="150"
 						font-weight="900"
