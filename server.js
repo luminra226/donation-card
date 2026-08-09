@@ -1,3 +1,4 @@
+```js
 const express = require("express");
 const sharp = require("sharp");
 
@@ -79,6 +80,7 @@ function cleanUsername(name) {
 // ======================================================
 
 function getDonationTheme(amount) {
+
 	// 100,000 - 999,999 — PINK
 	if (amount < 1_000_000) {
 		return {
@@ -121,6 +123,7 @@ async function createDonationCard({
 	donatorId,
 	raiserId
 }) {
+
 	const [
 		donatorAvatar,
 		raiserAvatar
@@ -163,7 +166,6 @@ async function createDonationCard({
 
 	// ==================================================
 	// AMOUNT SIZE
-	// Keeps large amounts inside the centre area
 	// ==================================================
 
 	let amountFontSize = 150;
@@ -177,37 +179,6 @@ async function createDonationCard({
 	} else if (formattedAmount.length >= 7) {
 		amountFontSize = 140;
 	}
-
-	// ==================================================
-	// ESTIMATE AMOUNT WIDTH
-	// Used to position the Robux icon beside it.
-	// ==================================================
-
-	const estimatedAmountWidth =
-		formattedAmount.length *
-		amountFontSize *
-		0.60;
-
-	const iconSize = 100;
-	const iconGap = 28;
-
-	const totalCenterWidth =
-		estimatedAmountWidth +
-		iconGap +
-		iconSize;
-
-	const groupStart =
-		1024 - (totalCenterWidth / 2);
-
-	const amountX =
-		groupStart + (estimatedAmountWidth / 2);
-
-	const iconX =
-		groupStart +
-		estimatedAmountWidth +
-		iconGap;
-
-	const iconY = 82;
 
 	// ==================================================
 	// SVG
@@ -365,80 +336,24 @@ async function createDonationCard({
 
 
 	<!-- ================================================= -->
-	<!-- CENTRED AMOUNT + ROBUX ICON -->
+	<!-- CENTRED DONATION AMOUNT -->
 	<!-- ================================================= -->
 
-	<g>
-
-		<!-- DONATION AMOUNT -->
-
-		<text
-			x="${amountX}"
-			y="207"
-			text-anchor="middle"
-			font-family="Arial Black, Arial, Helvetica, sans-serif"
-			font-size="${amountFontSize}"
-			font-weight="900"
-			fill="${theme.accent}"
-			stroke="#000000"
-			stroke-width="10"
-			stroke-linejoin="round"
-			paint-order="stroke fill"
-		>
-			${escapeXml(formattedAmount)}
-		</text>
-
-
-		<!-- ROBUX ICON -->
-
-		<g
-			transform="translate(${iconX} ${iconY}) scale(0.80)"
-			fill="${theme.accent}"
-			stroke="#000000"
-			stroke-width="8"
-			stroke-linejoin="round"
-		>
-
-			<!-- Outer token -->
-
-			<polygon
-				points="
-				64,0
-				118,31
-				118,94
-				64,125
-				10,94
-				10,31
-				"
-			/>
-
-			<!-- Inner token -->
-
-			<polygon
-				points="
-				64,16
-				98,36
-				98,87
-				64,107
-				30,87
-				30,36
-				"
-				fill="none"
-			/>
-
-			<!-- Center -->
-
-			<rect
-				x="53"
-				y="51"
-				width="22"
-				height="22"
-				fill="${theme.accent}"
-			/>
-
-		</g>
-
-	</g>
+	<text
+		x="1024"
+		y="207"
+		text-anchor="middle"
+		font-family="Arial Black, Arial, Helvetica, sans-serif"
+		font-size="${amountFontSize}"
+		font-weight="900"
+		fill="${theme.accent}"
+		stroke="#000000"
+		stroke-width="10"
+		stroke-linejoin="round"
+		paint-order="stroke fill"
+	>
+		${escapeXml(formattedAmount)}
+	</text>
 
 
 	<!-- ================================================= -->
@@ -532,7 +447,9 @@ app.get("/", (req, res) => {
 // ======================================================
 
 app.post("/donation", async (req, res) => {
+
 	try {
+
 		const {
 			DonatorName,
 			RaiserName,
@@ -625,6 +542,7 @@ app.post("/donation", async (req, res) => {
 			new FormData();
 
 		const discordPayload = {
+
 			username: "Donation Logs",
 
 			content:
@@ -681,6 +599,7 @@ app.post("/donation", async (req, res) => {
 			);
 
 		if (!discordResponse.ok) {
+
 			const error =
 				await discordResponse.text();
 
@@ -706,6 +625,7 @@ app.post("/donation", async (req, res) => {
 		});
 
 	} catch (error) {
+
 		console.error(
 			"Donation error:",
 			error
@@ -723,6 +643,7 @@ app.post("/donation", async (req, res) => {
 // ======================================================
 
 function getDiscordColor(amount) {
+
 	if (amount < 1_000_000) {
 		return 0xFF4FA3;
 	}
@@ -751,3 +672,4 @@ app.listen(
 		);
 	}
 );
+```
