@@ -653,7 +653,7 @@ function getDiscordColor(amount) {
 	}
 
 	if (amount < 100_000_000) {
-		return 0xA00000;
+		return 0xffb700;
 	}
 
 	return 0xA855F7;
