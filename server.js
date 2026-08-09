@@ -88,56 +88,50 @@ function cleanUsername(name) {
 
 function getDonationTheme(amount) {
 
-    // ==============================================
-    // 100K - 999K
-    // ==============================================
-
+    // 100,000 - 999,999 — PINK
     if (amount < 1_000_000) {
-
         return {
-            background: "#FF0000",
-            line: "#FC0505",
-            accent: "#FF0000"
+            background: "#FF4FA3",
+            gradientStart: "#FF2F92",
+            gradientEnd: "#FF9AD0",
+            line: "#FFD0E7",
+            accent: "#FF4FA3",
+            avatarBorder: "#FFB6DC"
         };
     }
 
-
-    // ==============================================
-    // 1M - 9.99M
-    // ==============================================
-
+    // 1,000,000 - 9,999,999 — RED
     if (amount < 10_000_000) {
-
         return {
-            background: "#FF0000",
-            line: "#FC0505",
-            accent: "#FF0000"
+            background: "#FF1717",
+            gradientStart: "#D90000",
+            gradientEnd: "#FF5555",
+            line: "#FF9999",
+            accent: "#FF1717",
+            avatarBorder: "#FF7777"
         };
     }
 
-
-    // ==============================================
-    // 10M - 99.99M
-    // ==============================================
-
+    // 10,000,000 - 99,999,999 — DEEP RED
     if (amount < 100_000_000) {
-
         return {
-            background: "#FF0000",
-            line: "#FC0505",
-            accent: "#FF0000"
+            background: "#A00000",
+            gradientStart: "#5C0000",
+            gradientEnd: "#D51B1B",
+            line: "#F05A5A",
+            accent: "#B00000",
+            avatarBorder: "#E44A4A"
         };
     }
 
-
-    // ==============================================
-    // 100M+
-    // ==============================================
-
+    // 100,000,000+ — PURPLE
     return {
-        background: "#35105C",
-        line: "#522079",
-        accent: "#A855F7"
+        background: "#7020A8",
+        gradientStart: "#3E0B68",
+        gradientEnd: "#B65CFF",
+        line: "#D8A6FF",
+        accent: "#A855F7",
+        avatarBorder: "#D19AFF"
     };
 }
 
@@ -238,19 +232,19 @@ async function createDonationCard({
 
             <stop
                 offset="0%"
-                stop-color="${theme.background}"
+                stop-color="${theme.gradientStart}"
             />
 
             <stop
                 offset="100%"
-                stop-color="${theme.background}"
+                stop-color="${theme.gradientEnd}"
             />
 
         </linearGradient>
 
 
         <!-- ========================================== -->
-        <!-- EXACT-STYLE HORIZONTAL LINES -->
+        <!-- HORIZONTAL LINES -->
         <!-- ========================================== -->
 
         <pattern
@@ -266,7 +260,7 @@ async function createDonationCard({
                 width="2048"
                 height="2"
                 fill="${theme.line}"
-                opacity="0.55"
+                opacity="0.35"
             />
 
             <rect
@@ -274,11 +268,32 @@ async function createDonationCard({
                 y="4"
                 width="2048"
                 height="1"
-                fill="#C90000"
-                opacity="0.28"
+                fill="#FFFFFF"
+                opacity="0.14"
             />
 
         </pattern>
+
+
+        <!-- ========================================== -->
+        <!-- CIRCULAR AVATAR CLIPS -->
+        <!-- ========================================== -->
+
+        <clipPath id="leftAvatarClip">
+            <circle
+                cx="392"
+                cy="202"
+                r="121"
+            />
+        </clipPath>
+
+        <clipPath id="rightAvatarClip">
+            <circle
+                cx="1660"
+                cy="202"
+                r="121"
+            />
+        </clipPath>
 
 
         <!-- ========================================== -->
@@ -303,28 +318,25 @@ async function createDonationCard({
 
 
     <!-- ================================================= -->
-    <!-- BLACK TOP BAR -->
+    <!-- 120PX TRANSPARENT TOP -->
+    <!-- ================================================= -->
+
+    <!--
+        Nothing is drawn from y=0 to y=119.
+        This area stays completely transparent.
+    -->
+
+
+    <!-- ================================================= -->
+    <!-- GRADIENT BACKGROUND -->
     <!-- ================================================= -->
 
     <rect
         x="0"
-        y="0"
+        y="120"
         width="2048"
-        height="42"
-        fill="#000000"
-    />
-
-
-    <!-- ================================================= -->
-    <!-- RED BACKGROUND -->
-    <!-- ================================================= -->
-
-    <rect
-        x="0"
-        y="42"
-        width="2048"
-        height="472"
-        fill="${theme.background}"
+        height="394"
+        fill="url(#background)"
     />
 
 
@@ -334,23 +346,23 @@ async function createDonationCard({
 
     <rect
         x="0"
-        y="42"
+        y="120"
         width="2048"
-        height="472"
+        height="394"
         fill="url(#horizontalLines)"
     />
 
 
     <!-- ================================================= -->
-    <!-- TOP RED EDGE -->
+    <!-- TOP GRADIENT EDGE -->
     <!-- ================================================= -->
 
     <rect
         x="0"
-        y="42"
+        y="120"
         width="2048"
         height="3"
-        fill="#E00000"
+        fill="${theme.gradientStart}"
     />
 
 
@@ -417,6 +429,19 @@ async function createDonationCard({
         width="250"
         height="250"
         preserveAspectRatio="xMidYMid meet"
+        clip-path="url(#leftAvatarClip)"
+    />
+
+    <!-- Avatar border -->
+
+    <circle
+        cx="392"
+        cy="202"
+        r="127"
+        fill="none"
+        stroke="${theme.avatarBorder}"
+        stroke-width="8"
+        opacity="0.95"
     />
 
 
@@ -431,6 +456,19 @@ async function createDonationCard({
         width="250"
         height="250"
         preserveAspectRatio="xMidYMid meet"
+        clip-path="url(#rightAvatarClip)"
+    />
+
+    <!-- Avatar border -->
+
+    <circle
+        cx="1660"
+        cy="202"
+        r="127"
+        fill="none"
+        stroke="${theme.avatarBorder}"
+        stroke-width="8"
+        opacity="0.95"
     />
 
 
@@ -499,7 +537,7 @@ async function createDonationCard({
         font-weight="400"
         fill="${theme.accent}"
         stroke="#000000"
-        stroke-width="8"
+        stroke-width="9"
         stroke-linejoin="round"
         paint-order="stroke fill"
     >
@@ -520,7 +558,7 @@ async function createDonationCard({
         font-weight="900"
         fill="#FFFFFF"
         stroke="#000000"
-        stroke-width="9"
+        stroke-width="10"
         stroke-linejoin="round"
         paint-order="stroke fill"
     >
@@ -541,7 +579,7 @@ async function createDonationCard({
         font-weight="900"
         fill="#FFFFFF"
         stroke="#000000"
-        stroke-width="8"
+        stroke-width="9"
         stroke-linejoin="round"
         paint-order="stroke fill"
     >
@@ -562,7 +600,7 @@ async function createDonationCard({
         font-weight="900"
         fill="#FFFFFF"
         stroke="#000000"
-        stroke-width="8"
+        stroke-width="9"
         stroke-linejoin="round"
         paint-order="stroke fill"
     >
@@ -848,15 +886,15 @@ app.post("/donation", async (req, res) => {
 function getDiscordColor(amount) {
 
     if (amount < 1_000_000) {
-        return 0xFF0000;
+        return 0xFF4FA3;
     }
 
     if (amount < 10_000_000) {
-        return 0xFF0000;
+        return 0xFF1717;
     }
 
     if (amount < 100_000_000) {
-        return 0xFF0000;
+        return 0xA00000;
     }
 
     return 0xA855F7;
