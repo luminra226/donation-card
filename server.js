@@ -180,43 +180,6 @@ async function createDonationCard({
 	}
 
 	// ==================================================
-	// ROBUX ICON POSITION
-	//
-	// The icon is now calculated AFTER the amount.
-	// It is vertically centred with the amount.
-	// ==================================================
-
-	const estimatedAmountWidth =
-		formattedAmount.length *
-		amountFontSize *
-		0.60;
-
-	const iconSize = 102;
-	const iconGap = 35;
-
-	const totalCenterWidth =
-		estimatedAmountWidth +
-		iconGap +
-		iconSize;
-
-	const groupStart =
-		1024 - (totalCenterWidth / 2);
-
-	// Amount sits on the left
-	const amountX =
-		groupStart +
-		(estimatedAmountWidth / 2);
-
-	// Icon sits directly to the RIGHT of amount
-	const iconX =
-		groupStart +
-		estimatedAmountWidth +
-		iconGap;
-
-	// Vertically centred with amount
-	const iconY = 100;
-
-	// ==================================================
 	// SVG
 	// ==================================================
 
@@ -230,7 +193,9 @@ async function createDonationCard({
 
 	<defs>
 
+		<!-- ========================================== -->
 		<!-- CIRCULAR AVATAR CLIPS -->
+		<!-- ========================================== -->
 
 		<clipPath id="leftAvatarClip">
 			<circle
@@ -248,7 +213,9 @@ async function createDonationCard({
 			/>
 		</clipPath>
 
+		<!-- ========================================== -->
 		<!-- SOFT AVATAR GLOW -->
+		<!-- ========================================== -->
 
 		<filter
 			id="softGlow"
@@ -372,7 +339,7 @@ async function createDonationCard({
 	<!-- ================================================= -->
 
 	<text
-		x="${amountX}"
+		x="1024"
 		y="207"
 		text-anchor="middle"
 		font-family="Arial Black, Arial, Helvetica, sans-serif"
@@ -386,59 +353,6 @@ async function createDonationCard({
 	>
 		${escapeXml(formattedAmount)}
 	</text>
-
-
-	<!-- ================================================= -->
-	<!-- ROBUX ICON -->
-	<!-- NOW DIRECTLY BESIDE THE AMOUNT -->
-	<!-- ================================================= -->
-
-	<g
-		transform="translate(${iconX} ${iconY}) scale(0.80)"
-		fill="${theme.accent}"
-		stroke="#000000"
-		stroke-width="8"
-		stroke-linejoin="round"
-	>
-
-		<!-- Outer token -->
-
-		<polygon
-			points="
-				64,0
-				118,31
-				118,94
-				64,125
-				10,94
-				10,31
-			"
-		/>
-
-		<!-- Inner token -->
-
-		<polygon
-			points="
-				64,16
-				98,36
-				98,87
-				64,107
-				30,87
-				30,36
-			"
-			fill="none"
-		/>
-
-		<!-- Center -->
-
-		<rect
-			x="53"
-			y="51"
-			width="22"
-			height="22"
-			fill="${theme.accent}"
-		/>
-
-	</g>
 
 
 	<!-- ================================================= -->
