@@ -247,6 +247,10 @@ const DISCORD_WEBHOOK_URL = process.env.DISCORD_WEBHOOK_URL;
 						<!-- HORIZONTAL LINES -->
 						<!-- ========================================== -->
 
+						<!-- ================================================= -->
+						<!-- SUBTLE HORIZONTAL LINES -->
+						<!-- ================================================= -->
+
 						<pattern
 						id="horizontalLines"
 						width="2048"
@@ -258,18 +262,27 @@ const DISCORD_WEBHOOK_URL = process.env.DISCORD_WEBHOOK_URL;
 						x="0"
 						y="0"
 						width="2048"
-						height="2"
-						fill="${theme.line}"
-						opacity="0.35"
+						height="1"
+						fill="#8F0000"
+						opacity="0.28"
 						/>
 
 						<rect
 						x="0"
-						y="4"
+						y="3"
 						width="2048"
 						height="1"
-						fill="#FFFFFF"
-						opacity="0.14"
+						fill="#FF5555"
+						opacity="0.18"
+						/>
+
+						<rect
+						x="0"
+						y="6"
+						width="2048"
+						height="1"
+						fill="#8F0000"
+						opacity="0.22"
 						/>
 
 						</pattern>
