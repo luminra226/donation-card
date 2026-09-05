@@ -111,7 +111,6 @@ async function createDonationCard({
     donatorId,
     raiserId
 }) {
-
     const [
         donatorAvatar,
         raiserAvatar
@@ -120,17 +119,13 @@ async function createDonationCard({
         getRobloxAvatar(raiserId)
     ]);
 
-    // ==================================================
-    // RESIZE AVATARS
-    // ==================================================
-
     const donatorPng = await sharp(donatorAvatar)
-        .resize(200, 200)
+        .resize(250, 250)
         .png()
         .toBuffer();
 
     const raiserPng = await sharp(raiserAvatar)
-        .resize(200, 200)
+        .resize(250, 250)
         .png()
         .toBuffer();
 
@@ -153,36 +148,57 @@ async function createDonationCard({
         cleanUsername(raiserName);
 
     // ==================================================
-    // CENTER AMOUNT GROUP
+    // EXACT REFERENCE LAYOUT
     // ==================================================
 
-    const approximateCharacterWidth = 48;
+    const WIDTH = 1872;
+    const HEIGHT = 470;
 
-    const textWidth =
-        formattedAmount.length *
-        approximateCharacterWidth;
+    // Avatar centers
+    const leftAvatarX = 354;
+    const rightAvatarX = 1516;
+    const avatarY = 188;
 
-    const iconSize = 76;
-    const iconGap = 24;
+    const avatarSize = 250;
+    const avatarRadius = 125;
+
+    // ==================================================
+    // AMOUNT GROUP
+    // ==================================================
+
+    // Reference:
+    // icon is immediately to the left of the number
+    // and the entire group is centered.
+
+    const iconSize = 96;
+    const iconGap = 22;
+
+    const amountFontSize = 112;
+
+    // Approximate width of Arial Black digits.
+    const amountTextWidth =
+        formattedAmount.length * 72;
 
     const totalAmountWidth =
         iconSize +
         iconGap +
-        textWidth;
+        amountTextWidth;
+
+    const amountGroupCenterX =
+        WIDTH / 2;
 
     const amountStartX =
-        700 -
+        amountGroupCenterX -
         (totalAmountWidth / 2);
 
-    const iconCenterX =
-        amountStartX +
-        (iconSize / 2);
+    const iconX =
+        amountStartX;
 
-    const amountTextCenterX =
+    const amountX =
         amountStartX +
         iconSize +
         iconGap +
-        (textWidth / 2);
+        (amountTextWidth / 2);
 
     // ==================================================
     // SVG
@@ -190,57 +206,40 @@ async function createDonationCard({
 
     const svg = `
 <svg
-    width="1400"
-    height="560"
-    viewBox="0 0 1400 560"
+    width="${WIDTH}"
+    height="${HEIGHT}"
+    viewBox="0 0 ${WIDTH} ${HEIGHT}"
     xmlns="http://www.w3.org/2000/svg"
 >
 
     <defs>
 
         <!-- ========================================== -->
-        <!-- AVATAR CLIPS -->
+        <!-- LEFT AVATAR -->
         <!-- ========================================== -->
 
         <clipPath id="leftAvatarClip">
             <circle
-                cx="280"
-                cy="220"
-                r="100"
+                cx="${leftAvatarX}"
+                cy="${avatarY}"
+                r="${avatarRadius}"
             />
         </clipPath>
+
+        <!-- ========================================== -->
+        <!-- RIGHT AVATAR -->
+        <!-- ========================================== -->
 
         <clipPath id="rightAvatarClip">
             <circle
-                cx="1120"
-                cy="220"
-                r="100"
+                cx="${rightAvatarX}"
+                cy="${avatarY}"
+                r="${avatarRadius}"
             />
         </clipPath>
 
-        <!-- ========================================== -->
-        <!-- AVATAR GLOW -->
-        <!-- ========================================== -->
-
-        <filter
-            id="avatarGlow"
-            x="-50%"
-            y="-50%"
-            width="200%"
-            height="200%"
-        >
-            <feGaussianBlur
-                stdDeviation="3"
-                result="blur"
-            />
-
-            <feMerge>
-                <feMergeNode in="blur"/>
-                <feMergeNode in="SourceGraphic"/>
-            </feMerge>
-        </filter>
-
     </defs>
+
 
     <!-- ================================================= -->
     <!-- LEFT AVATAR -->
@@ -248,25 +247,25 @@ async function createDonationCard({
 
     <image
         href="data:image/png;base64,${donatorBase64}"
-        x="180"
-        y="120"
-        width="200"
-        height="200"
+        x="${leftAvatarX - avatarRadius}"
+        y="${avatarY - avatarRadius}"
+        width="${avatarSize}"
+        height="${avatarSize}"
         preserveAspectRatio="xMidYMid meet"
         clip-path="url(#leftAvatarClip)"
     />
 
-    <!-- PINK AVATAR RING -->
+    <!-- Pink ring -->
 
     <circle
-        cx="280"
-        cy="220"
-        r="106"
+        cx="${leftAvatarX}"
+        cy="${avatarY}"
+        r="${avatarRadius - 3}"
         fill="none"
         stroke="${theme.accent}"
-        stroke-width="10"
-        filter="url(#avatarGlow)"
+        stroke-width="7"
     />
+
 
     <!-- ================================================= -->
     <!-- RIGHT AVATAR -->
@@ -274,28 +273,28 @@ async function createDonationCard({
 
     <image
         href="data:image/png;base64,${raiserBase64}"
-        x="1020"
-        y="120"
-        width="200"
-        height="200"
+        x="${rightAvatarX - avatarRadius}"
+        y="${avatarY - avatarRadius}"
+        width="${avatarSize}"
+        height="${avatarSize}"
         preserveAspectRatio="xMidYMid meet"
         clip-path="url(#rightAvatarClip)"
     />
 
-    <!-- PINK AVATAR RING -->
+    <!-- Pink ring -->
 
     <circle
-        cx="1120"
-        cy="220"
-        r="106"
+        cx="${rightAvatarX}"
+        cy="${avatarY}"
+        r="${avatarRadius - 3}"
         fill="none"
         stroke="${theme.accent}"
-        stroke-width="10"
-        filter="url(#avatarGlow)"
+        stroke-width="7"
     />
 
+
     <!-- ================================================= -->
-    <!-- CENTER DONATION -->
+    <!-- CENTER AMOUNT -->
     <!-- ================================================= -->
 
     <g>
@@ -307,153 +306,137 @@ async function createDonationCard({
         <g
             transform="
                 translate(
-                    ${iconCenterX - 38},
-                    162
+                    ${iconX},
+                    95
                 )
+                scale(1.26)
             "
         >
 
-            <!-- Outer pink shape + BLACK outline -->
+            <!-- Outer Robux shape -->
 
             <path
                 d="
                     M38 0
-                    L69 17
-                    Q76 21 76 28
-                    L76 48
-                    Q76 55 69 59
+                    L68 17
+                    Q75 21 75 28
+                    L75 48
+                    Q75 55 68 59
                     L38 76
-                    L7 59
-                    Q0 55 0 48
-                    L0 28
-                    Q0 21 7 17
+                    L8 59
+                    Q1 55 1 48
+                    L1 28
+                    Q1 21 8 17
                     Z
                 "
                 fill="${theme.accent}"
-                stroke="#000000"
-                stroke-width="7"
-                stroke-linejoin="round"
-            />
-
-            <!-- Inner black geometric outline -->
-
-            <path
-                d="
-                    M38 15
-                    L59 27
-                    L59 49
-                    L38 61
-                    L17 49
-                    L17 27
-                    Z
-                "
-                fill="none"
                 stroke="#000000"
                 stroke-width="5"
                 stroke-linejoin="round"
             />
 
-            <!-- Center black square -->
+            <!-- Inner outline -->
+
+            <path
+                d="
+                    M38 15
+                    L58 27
+                    L58 49
+                    L38 61
+                    L18 49
+                    L18 27
+                    Z
+                "
+                fill="none"
+                stroke="#000000"
+                stroke-width="4"
+                stroke-linejoin="round"
+            />
+
+            <!-- Center square -->
 
             <rect
                 x="31"
                 y="31"
                 width="14"
                 height="14"
-                rx="1"
                 fill="#000000"
             />
 
         </g>
+
 
         <!-- ============================================= -->
         <!-- AMOUNT -->
         <!-- ============================================= -->
 
         <text
-            x="${amountTextCenterX}"
-            y="224"
+            x="${amountX}"
+            y="184"
             text-anchor="middle"
-            font-family="Arial Black, Arial, sans-serif"
-            font-size="78"
+            font-family="Arial Black, Arial, Helvetica, sans-serif"
+            font-size="${amountFontSize}"
             font-weight="900"
             fill="${theme.accent}"
-            stroke="#000000"
-            stroke-width="6"
-            stroke-linejoin="round"
-            paint-order="stroke"
         >
             ${escapeXml(formattedAmount)}
         </text>
 
     </g>
 
+
     <!-- ================================================= -->
     <!-- DONATED TO -->
     <!-- ================================================= -->
 
     <text
-        x="700"
-        y="310"
+        x="${WIDTH / 2}"
+        y="295"
         text-anchor="middle"
-        font-family="Arial Black, Arial, sans-serif"
-        font-size="52"
+        font-family="Arial Black, Arial, Helvetica, sans-serif"
+        font-size="78"
         font-weight="900"
         fill="#FFFFFF"
-        stroke="#000000"
-        stroke-width="6"
-        stroke-linejoin="round"
-        paint-order="stroke"
     >
         donated to
     </text>
+
 
     <!-- ================================================= -->
     <!-- LEFT USERNAME -->
     <!-- ================================================= -->
 
     <text
-        x="280"
-        y="385"
+        x="${leftAvatarX}"
+        y="383"
         text-anchor="middle"
-        font-family="Arial Black, Arial, sans-serif"
-        font-size="32"
+        font-family="Arial Black, Arial, Helvetica, sans-serif"
+        font-size="47"
         font-weight="900"
         fill="#FFFFFF"
-        stroke="#000000"
-        stroke-width="4"
-        stroke-linejoin="round"
-        paint-order="stroke"
     >
         @${escapeXml(donatorUsername)}
     </text>
+
 
     <!-- ================================================= -->
     <!-- RIGHT USERNAME -->
     <!-- ================================================= -->
 
     <text
-        x="1120"
-        y="385"
+        x="${rightAvatarX}"
+        y="383"
         text-anchor="middle"
-        font-family="Arial Black, Arial, sans-serif"
-        font-size="32"
+        font-family="Arial Black, Arial, Helvetica, sans-serif"
+        font-size="47"
         font-weight="900"
         fill="#FFFFFF"
-        stroke="#000000"
-        stroke-width="4"
-        stroke-linejoin="round"
-        paint-order="stroke"
     >
         @${escapeXml(raiserUsername)}
     </text>
 
 </svg>
 `;
-
-    // ==================================================
-    // RENDER PNG WITH TRANSPARENCY
-    // ==================================================
 
     return await sharp(
         Buffer.from(svg)
