@@ -288,97 +288,97 @@ async function createDonationCard({
         stroke-width="7"
     />
 
-<!-- ================================================= -->
-<!-- CENTER ROBUX + AMOUNT -->
-<!-- ================================================= -->
 
-<g>
+    <!-- ================================================= -->
+    <!-- CENTER AMOUNT -->
+    <!-- ================================================= -->
 
-    <!-- ROBUX ICON -->
+    <g>
 
-    <g
-        transform="
-            translate(${iconX}, 95)
-        "
-    >
+        <!-- ============================================= -->
+        <!-- ROBUX ICON -->
+        <!-- ============================================= -->
 
-        <!-- Outer pink Robux shape -->
-
-        <path
-            d="
-                M48 0
-                L86 22
-                Q96 28 96 38
-                L96 58
-                Q96 68 86 74
-                L48 96
-                L10 74
-                Q0 68 0 58
-                L0 38
-                Q0 28 10 22
-                Z
+        <g
+            transform="
+                translate(
+                    ${iconX},
+                    95
+                )
+                scale(1.26)
             "
+        >
+
+            <!-- Outer Robux shape -->
+
+            <path
+                d="
+                    M38 0
+                    L68 17
+                    Q75 21 75 28
+                    L75 48
+                    Q75 55 68 59
+                    L38 76
+                    L8 59
+                    Q1 55 1 48
+                    L1 28
+                    Q1 21 8 17
+                    Z
+                "
+                fill="${theme.accent}"
+                stroke="#000000"
+                stroke-width="5"
+                stroke-linejoin="round"
+            />
+
+            <!-- Inner outline -->
+
+            <path
+                d="
+                    M38 15
+                    L58 27
+                    L58 49
+                    L38 61
+                    L18 49
+                    L18 27
+                    Z
+                "
+                fill="none"
+                stroke="#000000"
+                stroke-width="4"
+                stroke-linejoin="round"
+            />
+
+            <!-- Center square -->
+
+            <rect
+                x="31"
+                y="31"
+                width="14"
+                height="14"
+                fill="#000000"
+            />
+
+        </g>
+
+
+        <!-- ============================================= -->
+        <!-- AMOUNT -->
+        <!-- ============================================= -->
+
+        <text
+            x="${amountX}"
+            y="184"
+            text-anchor="middle"
+            font-family="Arial Black, Arial, Helvetica, sans-serif"
+            font-size="${amountFontSize}"
+            font-weight="900"
             fill="${theme.accent}"
-            stroke="#000000"
-            stroke-width="6"
-            stroke-linejoin="round"
-        />
-
-        <!-- Inner black outline -->
-
-        <path
-            d="
-                M48 19
-                L75 35
-                L75 61
-                L48 77
-                L21 61
-                L21 35
-                Z
-            "
-            fill="none"
-            stroke="#000000"
-            stroke-width="5"
-            stroke-linejoin="round"
-        />
-
-        <!-- Center square -->
-
-        <rect
-            x="39"
-            y="39"
-            width="18"
-            height="18"
-            rx="1"
-            fill="#000000"
-        />
+        >
+            ${escapeXml(formattedAmount)}
+        </text>
 
     </g>
-
-
-    <!-- ================================================= -->
-    <!-- AMOUNT -->
-    <!-- ================================================= -->
-
-    <text
-        x="${amountX}"
-        y="184"
-        text-anchor="middle"
-        font-family="Arial Black, Arial, Helvetica, sans-serif"
-        font-size="${amountFontSize}"
-        font-weight="900"
-        fill="${theme.accent}"
-
-        <!-- BLACK TEXT STROKE -->
-        stroke="#000000"
-        stroke-width="5"
-        stroke-linejoin="round"
-        paint-order="stroke fill"
-    >
-        ${escapeXml(formattedAmount)}
-    </text>
-
-</g>
 
 
     <!-- ================================================= -->
@@ -440,16 +440,6 @@ async function createDonationCard({
         .png()
         .toBuffer();
 }
-
-// ======================================================
-// HOMEPAGE
-// ======================================================
-
-app.get("/", (req, res) => {
-    res.send(
-        "Roblox Donation Card API is online."
-    );
-});
 
 // ======================================================
 // DONATION ENDPOINT
