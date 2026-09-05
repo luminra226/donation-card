@@ -112,277 +112,409 @@ function getDonationTheme(amount) {
 // ======================================================
 
 async function createDonationCard({
-	donatorName,
-	raiserName,
-	amount,
-	donatorId,
-	raiserId
+    donatorName,
+    raiserName,
+    amount,
+    donatorId,
+    raiserId
 }) {
 
-	const [
-		donatorAvatar,
-		raiserAvatar
-	] = await Promise.all([
-		getRobloxAvatar(donatorId),
-		getRobloxAvatar(raiserId)
-	]);
+    const [
+        donatorAvatar,
+        raiserAvatar
+    ] = await Promise.all([
+        getRobloxAvatar(donatorId),
+        getRobloxAvatar(raiserId)
+    ]);
 
-	// ==================================================
-	// RESIZE AVATARS
-	// ==================================================
+    // ==================================================
+    // RESIZE AVATARS
+    // ==================================================
 
-	const donatorPng = await sharp(donatorAvatar)
-		.resize(200, 200)
-		.png()
-		.toBuffer();
+    const donatorPng = await sharp(donatorAvatar)
+        .resize(200, 200)
+        .png()
+        .toBuffer();
 
-	const raiserPng = await sharp(raiserAvatar)
-		.resize(200, 200)
-		.png()
-		.toBuffer();
+    const raiserPng = await sharp(raiserAvatar)
+        .resize(200, 200)
+        .png()
+        .toBuffer();
 
-	const donatorBase64 =
-		donatorPng.toString("base64");
+    const donatorBase64 =
+        donatorPng.toString("base64");
 
-	const raiserBase64 =
-		raiserPng.toString("base64");
+    const raiserBase64 =
+        raiserPng.toString("base64");
 
-	const formattedAmount =
-		Number(amount).toLocaleString("en-US");
+    const formattedAmount =
+        Number(amount).toLocaleString("en-US");
 
-	const theme =
-		getDonationTheme(amount);
+    const theme =
+        getDonationTheme(Number(amount));
 
-	const donatorUsername =
-		cleanUsername(donatorName);
+    const donatorUsername =
+        cleanUsername(donatorName);
 
-	const raiserUsername =
-		cleanUsername(raiserName);
+    const raiserUsername =
+        cleanUsername(raiserName);
 
-	// ==================================================
-	// SVG
-	// ==================================================
+    // ==================================================
+    // CENTER DONATION AMOUNT
+    // ==================================================
+    //
+    // The two avatars are centered at:
+    //
+    // LEFT  = 280
+    // RIGHT = 1120
+    //
+    // The exact middle is:
+    //
+    // (280 + 1120) / 2 = 700
+    //
+    // We calculate the width of the amount group so
+    // the icon + amount are ALWAYS centered at 700.
+    // ==================================================
 
-	const svg = `
+    const approximateCharacterWidth = 48;
+
+    const textWidth =
+        formattedAmount.length *
+        approximateCharacterWidth;
+
+    const iconSize = 76;
+    const iconGap = 24;
+
+    const totalAmountWidth =
+        iconSize +
+        iconGap +
+        textWidth;
+
+    const amountStartX =
+        700 -
+        (totalAmountWidth / 2);
+
+    const iconCenterX =
+        amountStartX +
+        (iconSize / 2);
+
+    const amountTextCenterX =
+        amountStartX +
+        iconSize +
+        iconGap +
+        (textWidth / 2);
+
+    // ==================================================
+    // SVG
+    // ==================================================
+
+    const svg = `
 <svg
-	width="1400"
-	height="560"
-	viewBox="0 0 1400 560"
-	xmlns="http://www.w3.org/2000/svg"
+    width="1400"
+    height="560"
+    viewBox="0 0 1400 560"
+    xmlns="http://www.w3.org/2000/svg"
 >
 
-	<defs>
+    <defs>
 
-		<!-- ========================================== -->
-		<!-- CIRCULAR AVATAR CLIPS -->
-		<!-- ========================================== -->
+        <!-- ========================================== -->
+        <!-- CIRCULAR AVATAR CLIPS -->
+        <!-- ========================================== -->
 
-		<clipPath id="leftAvatarClip">
-			<circle
-				cx="280"
-				cy="220"
-				r="100"
-			/>
-		</clipPath>
+        <clipPath id="leftAvatarClip">
+            <circle
+                cx="280"
+                cy="220"
+                r="100"
+            />
+        </clipPath>
 
-		<clipPath id="rightAvatarClip">
-			<circle
-				cx="1120"
-				cy="220"
-				r="100"
-			/>
-		</clipPath>
+        <clipPath id="rightAvatarClip">
+            <circle
+                cx="1120"
+                cy="220"
+                r="100"
+            />
+        </clipPath>
 
-		<!-- ========================================== -->
-		<!-- BOTTOM GLOW GRADIENT -->
-		<!-- ========================================== -->
+        <!-- ========================================== -->
+        <!-- BOTTOM GLOW -->
+        <!-- Transparent at the bottom -->
+        <!-- ========================================== -->
 
-		<linearGradient
-			id="bottomGlow"
-			x1="0"
-			y1="0"
-			x2="0"
-			y2="1"
-		>
-			<stop offset="0%" stop-color="${theme.accent}" stop-opacity="0" />
-			<stop offset="100%" stop-color="${theme.accent}" stop-opacity="0.25" />
-		</linearGradient>
+        <linearGradient
+            id="bottomGlow"
+            x1="0"
+            y1="0"
+            x2="0"
+            y2="1"
+        >
+            <stop
+                offset="0%"
+                stop-color="${theme.accent}"
+                stop-opacity="0"
+            />
 
-	</defs>
+            <stop
+                offset="45%"
+                stop-color="${theme.accent}"
+                stop-opacity="0.08"
+            />
 
-	<!-- ================================================= -->
-	<!-- CARD BACKGROUND -->
-	<!-- ================================================= -->
+            <stop
+                offset="100%"
+                stop-color="${theme.accent}"
+                stop-opacity="0"
+            />
+        </linearGradient>
 
-	<rect
-		x="0"
-		y="0"
-		width="1400"
-		height="560"
-		rx="32"
-		ry="32"
-		fill="#111214"
-	/>
+        <!-- ========================================== -->
+        <!-- SOFT AVATAR GLOW -->
+        <!-- ========================================== -->
 
-	<!-- ================================================= -->
-	<!-- BOTTOM FADE GRADIENT OVERLAY -->
-	<!-- ================================================= -->
+        <filter
+            id="avatarGlow"
+            x="-50%"
+            y="-50%"
+            width="200%"
+            height="200%"
+        >
+            <feGaussianBlur
+                stdDeviation="5"
+                result="blur"
+            />
 
-	<rect
-		x="0"
-		y="280"
-		width="1400"
-		height="280"
-		rx="0"
-		ry="0"
-		fill="url(#bottomGlow)"
-	/>
+            <feMerge>
+                <feMergeNode
+                    in="blur"
+                />
 
-	<!-- ================================================= -->
-	<!-- LEFT ROBLOX AVATAR -->
-	<!-- ================================================= -->
+                <feMergeNode
+                    in="SourceGraphic"
+                />
+            </feMerge>
+        </filter>
 
-	<image
-		href="data:image/png;base64,${donatorBase64}"
-		x="180"
-		y="120"
-		width="200"
-		height="200"
-		preserveAspectRatio="xMidYMid meet"
-		clip-path="url(#leftAvatarClip)"
-	/>
+    </defs>
 
-	<circle
-		cx="280"
-		cy="220"
-		r="106"
-		fill="none"
-		stroke="${theme.accent}"
-		stroke-width="12"
-	/>
+    <!-- ================================================= -->
+    <!-- TRANSPARENT BACKGROUND -->
+    <!-- ================================================= -->
 
-	<!-- ================================================= -->
-	<!-- RIGHT ROBLOX AVATAR -->
-	<!-- ================================================= -->
+    <!--
+        NO BACKGROUND RECT HERE.
+        The PNG will remain transparent.
+    -->
 
-	<image
-		href="data:image/png;base64,${raiserBase64}"
-		x="1020"
-		y="120"
-		width="200"
-		height="200"
-		preserveAspectRatio="xMidYMid meet"
-		clip-path="url(#rightAvatarClip)"
-	/>
+    <!-- ================================================= -->
+    <!-- SUBTLE BOTTOM GLOW -->
+    <!-- ================================================= -->
 
-	<circle
-		cx="1120"
-		cy="220"
-		r="106"
-		fill="none"
-		stroke="${theme.accent}"
-		stroke-width="12"
-	/>
+    <rect
+        x="0"
+        y="280"
+        width="1400"
+        height="280"
+        fill="url(#bottomGlow)"
+    />
 
-	<!-- ================================================= -->
-	<!-- CENTER ROBUX ICON -->
-	<!-- ================================================= -->
+    <!-- ================================================= -->
+    <!-- LEFT AVATAR -->
+    <!-- ================================================= -->
 
-	<circle
-		cx="530"
-		cy="200"
-		r="38"
-		fill="${theme.accent}"
-	/>
+    <image
+        href="data:image/png;base64,${donatorBase64}"
+        x="180"
+        y="120"
+        width="200"
+        height="200"
+        preserveAspectRatio="xMidYMid meet"
+        clip-path="url(#leftAvatarClip)"
+    />
 
-	<rect
-		x="517"
-		y="187"
-		width="26"
-		height="26"
-		rx="5"
-		ry="5"
-		fill="#111214"
-	/>
+    <!-- LEFT AVATAR OUTLINE -->
 
-	<!-- ================================================= -->
-	<!-- DONATION AMOUNT -->
-	<!-- ================================================= -->
+    <circle
+        cx="280"
+        cy="220"
+        r="106"
+        fill="none"
+        stroke="${theme.accent}"
+        stroke-width="12"
+        filter="url(#avatarGlow)"
+    />
 
-	<text
-		x="590"
-		y="224"
-		text-anchor="start"
-		font-family="Arial Black, Impact, sans-serif"
-		font-size="78"
-		font-weight="900"
-		fill="${theme.accent}"
-	>
-		${escapeXml(formattedAmount)}
-	</text>
+    <!-- ================================================= -->
+    <!-- RIGHT AVATAR -->
+    <!-- ================================================= -->
 
-	<!-- ================================================= -->
-	<!-- DONATED TO -->
-	<!-- ================================================= -->
+    <image
+        href="data:image/png;base64,${raiserBase64}"
+        x="1020"
+        y="120"
+        width="200"
+        height="200"
+        preserveAspectRatio="xMidYMid meet"
+        clip-path="url(#rightAvatarClip)"
+    />
 
-	<text
-		x="700"
-		y="310"
-		text-anchor="middle"
-		font-family="Arial Black, Impact, sans-serif"
-		font-size="52"
-		font-weight="900"
-		fill="#FFFFFF"
-	>
-		donated to
-	</text>
+    <!-- RIGHT AVATAR OUTLINE -->
 
-	<!-- ================================================= -->
-	<!-- LEFT USERNAME BADGE -->
-	<!-- ================================================= -->
+    <circle
+        cx="1120"
+        cy="220"
+        r="106"
+        fill="none"
+        stroke="${theme.accent}"
+        stroke-width="12"
+        filter="url(#avatarGlow)"
+    />
 
-	<text
-		x="280"
-		y="385"
-		text-anchor="middle"
-		font-family="Arial Black, Impact, sans-serif"
-		font-size="32"
-		font-weight="900"
-		fill="#FFFFFF"
-	>
-		@${escapeXml(donatorUsername)}
-	</text>
+    <!-- ================================================= -->
+    <!-- CENTER DONATION AMOUNT -->
+    <!-- ALWAYS CENTERED AT X = 700 -->
+    <!-- ================================================= -->
 
-	<!-- ================================================= -->
-	<!-- RIGHT USERNAME BADGE -->
-	<!-- ================================================= -->
+    <g>
 
-	<text
-		x="1120"
-		y="385"
-		text-anchor="middle"
-		font-family="Arial Black, Impact, sans-serif"
-		font-size="32"
-		font-weight="900"
-		fill="#FFFFFF"
-	>
-		@${escapeXml(raiserUsername)}
-	</text>
+        <!-- ============================================= -->
+        <!-- ROBUX ICON -->
+        <!-- ============================================= -->
+
+        <g
+            transform="
+                translate(
+                    ${iconCenterX - 38},
+                    162
+                )
+            "
+        >
+
+            <!-- Outer diamond -->
+            <path
+                d="
+                    M38 0
+                    L72 18
+                    L72 58
+                    L38 76
+                    L4 58
+                    L4 18
+                    Z
+                "
+                fill="${theme.accent}"
+            />
+
+            <!-- Inner Roblox-style cutout -->
+            <path
+                d="
+                    M27 18
+                    L51 12
+                    L59 20
+                    L51 58
+                    L25 64
+                    L17 56
+                    Z
+                "
+                fill="#111214"
+            />
+
+            <!-- Inner highlight -->
+            <path
+                d="
+                    M30 27
+                    L45 23
+                    L49 27
+                    L44 49
+                    L29 53
+                    L25 49
+                    Z
+                "
+                fill="${theme.accent}"
+                opacity="0.95"
+            />
+
+        </g>
+
+        <!-- ============================================= -->
+        <!-- AMOUNT -->
+        <!-- ============================================= -->
+
+        <text
+            x="${amountTextCenterX}"
+            y="224"
+            text-anchor="middle"
+            font-family="Arial Black, Impact, sans-serif"
+            font-size="78"
+            font-weight="900"
+            fill="${theme.accent}"
+        >
+            ${escapeXml(formattedAmount)}
+        </text>
+
+    </g>
+
+    <!-- ================================================= -->
+    <!-- DONATED TO -->
+    <!-- ================================================= -->
+
+    <text
+        x="700"
+        y="310"
+        text-anchor="middle"
+        font-family="Arial Black, Impact, sans-serif"
+        font-size="52"
+        font-weight="900"
+        fill="#FFFFFF"
+    >
+        donated to
+    </text>
+
+    <!-- ================================================= -->
+    <!-- LEFT USERNAME -->
+    <!-- ================================================= -->
+
+    <text
+        x="280"
+        y="385"
+        text-anchor="middle"
+        font-family="Arial Black, Impact, sans-serif"
+        font-size="32"
+        font-weight="900"
+        fill="#FFFFFF"
+    >
+        @${escapeXml(donatorUsername)}
+    </text>
+
+    <!-- ================================================= -->
+    <!-- RIGHT USERNAME -->
+    <!-- ================================================= -->
+
+    <text
+        x="1120"
+        y="385"
+        text-anchor="middle"
+        font-family="Arial Black, Impact, sans-serif"
+        font-size="32"
+        font-weight="900"
+        fill="#FFFFFF"
+    >
+        @${escapeXml(raiserUsername)}
+    </text>
 
 </svg>
 `;
 
-	// ==================================================
-	// RENDER PNG
-	// ==================================================
+    // ==================================================
+    // RENDER PNG WITH TRANSPARENCY
+    // ==================================================
 
-	return await sharp(
-		Buffer.from(svg)
-	)
-		.png()
-		.toBuffer();
+    return await sharp(
+        Buffer.from(svg)
+    )
+        .png()
+        .toBuffer();
 }
-
 // ======================================================
 // HOMEPAGE
 // ======================================================
