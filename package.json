@@ -7,7 +7,9 @@
     "start": "node server.js"
   },
   "dependencies": {
+    "@napi-rs/canvas": "^0.1.68",
+    "axios": "^1.7.9",
     "express": "^4.21.2",
-    "sharp": "^0.34.3"
+    "form-data": "^4.0.1"
   }
 }
