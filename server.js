@@ -13,44 +13,44 @@ const DISCORD_WEBHOOK_URL = process.env.DISCORD_WEBHOOK_URL;
 // ======================================================
 
 async function getRobloxAvatar(userId) {
-	const url =
-		`https://thumbnails.roblox.com/v1/users/avatar-headshot` +
-		`?userIds=${encodeURIComponent(userId)}` +
-		`&size=420x420` +
-		`&format=Png` +
-		`&isCircular=false`;
+    const url =
+        `https://thumbnails.roblox.com/v1/users/avatar-headshot` +
+        `?userIds=${encodeURIComponent(userId)}` +
+        `&size=420x420` +
+        `&format=Png` +
+        `&isCircular=false`;
 
-	const response = await fetch(url);
+    const response = await fetch(url);
 
-	if (!response.ok) {
-		throw new Error(
-			`Roblox thumbnail API returned ${response.status}`
-		);
-	}
+    if (!response.ok) {
+        throw new Error(
+            `Roblox thumbnail API returned ${response.status}`
+        );
+    }
 
-	const json = await response.json();
+    const json = await response.json();
 
-	if (
-		!json.data ||
-		!json.data[0] ||
-		!json.data[0].imageUrl
-	) {
-		throw new Error("Roblox avatar not found");
-	}
+    if (
+        !json.data ||
+        !json.data[0] ||
+        !json.data[0].imageUrl
+    ) {
+        throw new Error("Roblox avatar not found");
+    }
 
-	const imageResponse = await fetch(
-		json.data[0].imageUrl
-	);
+    const imageResponse = await fetch(
+        json.data[0].imageUrl
+    );
 
-	if (!imageResponse.ok) {
-		throw new Error(
-			`Avatar image returned ${imageResponse.status}`
-		);
-	}
+    if (!imageResponse.ok) {
+        throw new Error(
+            `Avatar image returned ${imageResponse.status}`
+        );
+    }
 
-	return Buffer.from(
-		await imageResponse.arrayBuffer()
-	);
+    return Buffer.from(
+        await imageResponse.arrayBuffer()
+    );
 }
 
 // ======================================================
@@ -58,12 +58,12 @@ async function getRobloxAvatar(userId) {
 // ======================================================
 
 function escapeXml(value) {
-	return String(value)
-		.replace(/&/g, "&amp;")
-		.replace(/</g, "&lt;")
-		.replace(/>/g, "&gt;")
-		.replace(/"/g, "&quot;")
-		.replace(/'/g, "&apos;");
+    return String(value)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&apos;");
 }
 
 // ======================================================
@@ -71,7 +71,7 @@ function escapeXml(value) {
 // ======================================================
 
 function cleanUsername(name) {
-	return String(name).replace(/^@+/, "");
+    return String(name).replace(/^@+/, "");
 }
 
 // ======================================================
@@ -80,31 +80,24 @@ function cleanUsername(name) {
 
 function getDonationTheme(amount) {
 
-	// 100,000 - 999,999
-	if (amount < 1_000_000) {
-		return {
-			accent: "#FF007F"
-		};
-	}
+    // 100,000 - 9,999,999
+    if (amount < 10_000_000) {
+        return {
+            accent: "#FF00C8"
+        };
+    }
 
-	// 1,000,000 - 9,999,999
-	if (amount < 10_000_000) {
-		return {
-			accent: "#FF007F"
-		};
-	}
+    // 10,000,000 - 99,999,999
+    if (amount < 100_000_000) {
+        return {
+            accent: "#FFAA00"
+        };
+    }
 
-	// 10,000,000 - 99,999,999
-	if (amount < 100_000_000) {
-		return {
-			accent: "#FFAA00"
-		};
-	}
-
-	// 100,000,000+
-	return {
-		accent: "#00FFFF"
-	};
+    // 100,000,000+
+    return {
+        accent: "#00FFFF"
+    };
 }
 
 // ======================================================
@@ -160,20 +153,7 @@ async function createDonationCard({
         cleanUsername(raiserName);
 
     // ==================================================
-    // CENTER DONATION AMOUNT
-    // ==================================================
-    //
-    // The two avatars are centered at:
-    //
-    // LEFT  = 280
-    // RIGHT = 1120
-    //
-    // The exact middle is:
-    //
-    // (280 + 1120) / 2 = 700
-    //
-    // We calculate the width of the amount group so
-    // the icon + amount are ALWAYS centered at 700.
+    // CENTER AMOUNT GROUP
     // ==================================================
 
     const approximateCharacterWidth = 48;
@@ -219,7 +199,7 @@ async function createDonationCard({
     <defs>
 
         <!-- ========================================== -->
-        <!-- CIRCULAR AVATAR CLIPS -->
+        <!-- AVATAR CLIPS -->
         <!-- ========================================== -->
 
         <clipPath id="leftAvatarClip">
@@ -239,38 +219,7 @@ async function createDonationCard({
         </clipPath>
 
         <!-- ========================================== -->
-        <!-- BOTTOM GLOW -->
-        <!-- Transparent at the bottom -->
-        <!-- ========================================== -->
-
-        <linearGradient
-            id="bottomGlow"
-            x1="0"
-            y1="0"
-            x2="0"
-            y2="1"
-        >
-            <stop
-                offset="0%"
-                stop-color="${theme.accent}"
-                stop-opacity="0"
-            />
-
-            <stop
-                offset="45%"
-                stop-color="${theme.accent}"
-                stop-opacity="0.08"
-            />
-
-            <stop
-                offset="100%"
-                stop-color="${theme.accent}"
-                stop-opacity="0"
-            />
-        </linearGradient>
-
-        <!-- ========================================== -->
-        <!-- SOFT AVATAR GLOW -->
+        <!-- AVATAR GLOW -->
         <!-- ========================================== -->
 
         <filter
@@ -281,43 +230,17 @@ async function createDonationCard({
             height="200%"
         >
             <feGaussianBlur
-                stdDeviation="5"
+                stdDeviation="3"
                 result="blur"
             />
 
             <feMerge>
-                <feMergeNode
-                    in="blur"
-                />
-
-                <feMergeNode
-                    in="SourceGraphic"
-                />
+                <feMergeNode in="blur"/>
+                <feMergeNode in="SourceGraphic"/>
             </feMerge>
         </filter>
 
     </defs>
-
-    <!-- ================================================= -->
-    <!-- TRANSPARENT BACKGROUND -->
-    <!-- ================================================= -->
-
-    <!--
-        NO BACKGROUND RECT HERE.
-        The PNG will remain transparent.
-    -->
-
-    <!-- ================================================= -->
-    <!-- SUBTLE BOTTOM GLOW -->
-    <!-- ================================================= -->
-
-    <rect
-        x="0"
-        y="280"
-        width="1400"
-        height="280"
-        fill="url(#bottomGlow)"
-    />
 
     <!-- ================================================= -->
     <!-- LEFT AVATAR -->
@@ -333,7 +256,7 @@ async function createDonationCard({
         clip-path="url(#leftAvatarClip)"
     />
 
-    <!-- LEFT AVATAR OUTLINE -->
+    <!-- PINK AVATAR RING -->
 
     <circle
         cx="280"
@@ -341,7 +264,7 @@ async function createDonationCard({
         r="106"
         fill="none"
         stroke="${theme.accent}"
-        stroke-width="12"
+        stroke-width="10"
         filter="url(#avatarGlow)"
     />
 
@@ -359,7 +282,7 @@ async function createDonationCard({
         clip-path="url(#rightAvatarClip)"
     />
 
-    <!-- RIGHT AVATAR OUTLINE -->
+    <!-- PINK AVATAR RING -->
 
     <circle
         cx="1120"
@@ -367,74 +290,81 @@ async function createDonationCard({
         r="106"
         fill="none"
         stroke="${theme.accent}"
-        stroke-width="12"
+        stroke-width="10"
         filter="url(#avatarGlow)"
     />
 
     <!-- ================================================= -->
-    <!-- CENTER DONATION AMOUNT -->
-    <!-- ALWAYS CENTERED AT X = 700 -->
+    <!-- CENTER DONATION -->
     <!-- ================================================= -->
 
     <g>
 
-<!-- ROBUX ICON -->
-<g
-    transform="
-        translate(
-            ${iconCenterX - 38},
-            162
-        )
-    "
->
-    <!-- Outer black outline -->
-    <path
-        d="
-            M38 0
-            L70 18
-            Q76 21 76 28
-            L76 48
-            Q76 55 70 58
-            L38 76
-            L6 58
-            Q0 55 0 48
-            L0 28
-            Q0 21 6 18
-            Z
-        "
-        fill="${theme.accent}"
-        stroke="#000000"
-        stroke-width="7"
-        stroke-linejoin="round"
-    />
+        <!-- ============================================= -->
+        <!-- ROBUX ICON -->
+        <!-- ============================================= -->
 
-    <!-- Inner black outline -->
-    <path
-        d="
-            M38 13
-            L61 26
-            L61 50
-            L38 63
-            L15 50
-            L15 26
-            Z
-        "
-        fill="none"
-        stroke="#000000"
-        stroke-width="5"
-        stroke-linejoin="round"
-    />
+        <g
+            transform="
+                translate(
+                    ${iconCenterX - 38},
+                    162
+                )
+            "
+        >
 
-    <!-- Center square -->
-    <rect
-        x="31"
-        y="31"
-        width="14"
-        height="14"
-        rx="1"
-        fill="#000000"
-    />
-</g>
+            <!-- Outer pink shape + BLACK outline -->
+
+            <path
+                d="
+                    M38 0
+                    L69 17
+                    Q76 21 76 28
+                    L76 48
+                    Q76 55 69 59
+                    L38 76
+                    L7 59
+                    Q0 55 0 48
+                    L0 28
+                    Q0 21 7 17
+                    Z
+                "
+                fill="${theme.accent}"
+                stroke="#000000"
+                stroke-width="7"
+                stroke-linejoin="round"
+            />
+
+            <!-- Inner black geometric outline -->
+
+            <path
+                d="
+                    M38 15
+                    L59 27
+                    L59 49
+                    L38 61
+                    L17 49
+                    L17 27
+                    Z
+                "
+                fill="none"
+                stroke="#000000"
+                stroke-width="5"
+                stroke-linejoin="round"
+            />
+
+            <!-- Center black square -->
+
+            <rect
+                x="31"
+                y="31"
+                width="14"
+                height="14"
+                rx="1"
+                fill="#000000"
+            />
+
+        </g>
 
         <!-- ============================================= -->
         <!-- AMOUNT -->
@@ -444,10 +374,14 @@ async function createDonationCard({
             x="${amountTextCenterX}"
             y="224"
             text-anchor="middle"
-            font-family="Arial Black, Impact, sans-serif"
+            font-family="Arial Black, Arial, sans-serif"
             font-size="78"
             font-weight="900"
             fill="${theme.accent}"
+            stroke="#000000"
+            stroke-width="6"
+            stroke-linejoin="round"
+            paint-order="stroke"
         >
             ${escapeXml(formattedAmount)}
         </text>
@@ -462,10 +396,14 @@ async function createDonationCard({
         x="700"
         y="310"
         text-anchor="middle"
-        font-family="Arial Black, Impact, sans-serif"
+        font-family="Arial Black, Arial, sans-serif"
         font-size="52"
         font-weight="900"
         fill="#FFFFFF"
+        stroke="#000000"
+        stroke-width="6"
+        stroke-linejoin="round"
+        paint-order="stroke"
     >
         donated to
     </text>
@@ -478,10 +416,14 @@ async function createDonationCard({
         x="280"
         y="385"
         text-anchor="middle"
-        font-family="Arial Black, Impact, sans-serif"
+        font-family="Arial Black, Arial, sans-serif"
         font-size="32"
         font-weight="900"
         fill="#FFFFFF"
+        stroke="#000000"
+        stroke-width="4"
+        stroke-linejoin="round"
+        paint-order="stroke"
     >
         @${escapeXml(donatorUsername)}
     </text>
@@ -494,10 +436,14 @@ async function createDonationCard({
         x="1120"
         y="385"
         text-anchor="middle"
-        font-family="Arial Black, Impact, sans-serif"
+        font-family="Arial Black, Arial, sans-serif"
         font-size="32"
         font-weight="900"
         fill="#FFFFFF"
+        stroke="#000000"
+        stroke-width="4"
+        stroke-linejoin="round"
+        paint-order="stroke"
     >
         @${escapeXml(raiserUsername)}
     </text>
@@ -515,14 +461,15 @@ async function createDonationCard({
         .png()
         .toBuffer();
 }
+
 // ======================================================
 // HOMEPAGE
 // ======================================================
 
 app.get("/", (req, res) => {
-	res.send(
-		"Roblox Donation Card API is online."
-	);
+    res.send(
+        "Roblox Donation Card API is online."
+    );
 });
 
 // ======================================================
@@ -531,205 +478,215 @@ app.get("/", (req, res) => {
 
 app.post("/donation", async (req, res) => {
 
-	try {
+    try {
 
-		const {
-			DonatorName,
-			RaiserName,
-			Amount,
-			DonatorId,
-			RaiserId
-		} = req.body;
+        const {
+            DonatorName,
+            RaiserName,
+            Amount,
+            DonatorId,
+            RaiserId
+        } = req.body;
 
-		// ==============================================
-		// VALIDATION
-		// ==============================================
+        // ==============================================
+        // VALIDATION
+        // ==============================================
 
-		if (
-			!DonatorName ||
-			!RaiserName ||
-			!Amount ||
-			!DonatorId ||
-			!RaiserId
-		) {
-			return res.status(400).json({
-				success: false,
-				error: "Missing donation data"
-			});
-		}
+        if (
+            !DonatorName ||
+            !RaiserName ||
+            !Amount ||
+            !DonatorId ||
+            !RaiserId
+        ) {
+            return res.status(400).json({
+                success: false,
+                error: "Missing donation data"
+            });
+        }
 
-		const amount =
-			Number(Amount);
+        const amount =
+            Number(Amount);
 
-		const donatorId =
-			Number(DonatorId);
+        const donatorId =
+            Number(DonatorId);
 
-		const raiserId =
-			Number(RaiserId);
+        const raiserId =
+            Number(RaiserId);
 
-		if (
-			!Number.isFinite(amount) ||
-			!Number.isInteger(donatorId) ||
-			!Number.isInteger(raiserId)
-		) {
-			return res.status(400).json({
-				success: false,
-				error: "Invalid donation data"
-			});
-		}
+        if (
+            !Number.isFinite(amount) ||
+            !Number.isInteger(donatorId) ||
+            !Number.isInteger(raiserId)
+        ) {
+            return res.status(400).json({
+                success: false,
+                error: "Invalid donation data"
+            });
+        }
 
-		// ==============================================
-		// 100K MINIMUM
-		// ==============================================
+        // ==============================================
+        // 100K MINIMUM
+        // ==============================================
 
-		if (amount < 100000) {
-			return res.json({
-				success: true,
-				ignored: true
-			});
-		}
+        if (amount < 100000) {
+            return res.json({
+                success: true,
+                ignored: true
+            });
+        }
 
-		// ==============================================
-		// WEBHOOK CHECK
-		// ==============================================
+        // ==============================================
+        // WEBHOOK CHECK
+        // ==============================================
 
-		if (!DISCORD_WEBHOOK_URL) {
+        if (!DISCORD_WEBHOOK_URL) {
 
-			console.error(
-				"DISCORD_WEBHOOK_URL is missing"
-			);
+            console.error(
+                "DISCORD_WEBHOOK_URL is missing"
+            );
 
-			return res.status(500).json({
-				success: false,
-				error: "Webhook not configured"
-			});
-		}
+            return res.status(500).json({
+                success: false,
+                error: "Webhook not configured"
+            });
+        }
 
-		// ==============================================
-		// CREATE CARD
-		// ==============================================
+        // ==============================================
+        // CREATE CARD
+        // ==============================================
 
-		const card =
-			await createDonationCard({
-				donatorName: DonatorName,
-				raiserName: RaiserName,
-				amount: amount,
-				donatorId: donatorId,
-				raiserId: RaiserId
-			});
+        const card =
+            await createDonationCard({
+                donatorName: DonatorName,
+                raiserName: RaiserName,
+                amount: amount,
+                donatorId: donatorId,
+                raiserId: raiserId
+            });
 
-		// ==============================================
-		// FORMAT DATE
-		// ==============================================
+        // ==============================================
+        // FORMAT DATE
+        // ==============================================
 
-		const now = new Date();
-		const formattedDate = now.toLocaleString("en-US", {
-			month: "numeric",
-			day: "numeric",
-			year: "numeric",
-			hour: "numeric",
-			minute: "2-digit",
-			hour12: true
-		});
+        const now = new Date();
 
-		const theme = getDonationTheme(amount);
-		const hexColorInt = parseInt(theme.accent.replace("#", ""), 16);
+        const formattedDate =
+            now.toLocaleString("en-US", {
+                month: "numeric",
+                day: "numeric",
+                year: "numeric",
+                hour: "numeric",
+                minute: "2-digit",
+                hour12: true
+            });
 
-		// ==============================================
-		// DISCORD WEBHOOK
-		// ==============================================
+        const theme =
+            getDonationTheme(amount);
 
-		const form =
-			new FormData();
+        const hexColorInt =
+            parseInt(
+                theme.accent.replace("#", ""),
+                16
+            );
 
-		const discordPayload = {
+        // ==============================================
+        // DISCORD WEBHOOK
+        // ==============================================
 
-			content:
-				`\`@${cleanUsername(DonatorName)}\` donated **<:robux:123456789> ${amount.toLocaleString()} Robux** ` +
-				`to \`@${cleanUsername(RaiserName)}\``,
+        const form =
+            new FormData();
 
-			embeds: [
-				{
-					color: hexColorInt,
+        const discordPayload = {
 
-					image: {
-						url: "attachment://donation.png"
-					},
+            content:
+                `\`@${cleanUsername(DonatorName)}\` donated **<:robux:123456789> ${amount.toLocaleString()} Robux** ` +
+                `to \`@${cleanUsername(RaiserName)}\``,
 
-					footer: {
-						text: `Donated on • ${formattedDate}`
-					}
-				}
-			],
+            embeds: [
+                {
+                    color: hexColorInt,
 
-			allowed_mentions: {
-				parse: []
-			}
-		};
+                    image: {
+                        url:
+                            "attachment://donation.png"
+                    },
 
-		form.append(
-			"payload_json",
-			JSON.stringify(discordPayload)
-		);
+                    footer: {
+                        text:
+                            `Donated on • ${formattedDate}`
+                    }
+                }
+            ],
 
-		form.append(
-			"files[0]",
-			new Blob(
-				[card],
-				{
-					type: "image/png"
-				}
-			),
-			"donation.png"
-		);
+            allowed_mentions: {
+                parse: []
+            }
+        };
 
-		const discordResponse =
-			await fetch(
-				DISCORD_WEBHOOK_URL,
-				{
-					method: "POST",
-					body: form
-				}
-			);
+        form.append(
+            "payload_json",
+            JSON.stringify(discordPayload)
+        );
 
-		if (!discordResponse.ok) {
+        form.append(
+            "files[0]",
+            new Blob(
+                [card],
+                {
+                    type: "image/png"
+                }
+            ),
+            "donation.png"
+        );
 
-			const error =
-				await discordResponse.text();
+        const discordResponse =
+            await fetch(
+                DISCORD_WEBHOOK_URL,
+                {
+                    method: "POST",
+                    body: form
+                }
+            );
 
-			console.error(
-				"Discord error:",
-				error
-			);
+        if (!discordResponse.ok) {
 
-			return res.status(502).json({
-				success: false,
-				error: "Discord webhook failed"
-			});
-		}
+            const error =
+                await discordResponse.text();
 
-		console.log(
-			`${DonatorName} donated ` +
-			`${amount.toLocaleString()} ` +
-			`to ${RaiserName}`
-		);
+            console.error(
+                "Discord error:",
+                error
+            );
 
-		return res.json({
-			success: true
-		});
+            return res.status(502).json({
+                success: false,
+                error: "Discord webhook failed"
+            });
+        }
 
-	} catch (error) {
+        console.log(
+            `${DonatorName} donated ` +
+            `${amount.toLocaleString()} ` +
+            `to ${RaiserName}`
+        );
 
-		console.error(
-			"Donation error:",
-			error
-		);
+        return res.json({
+            success: true
+        });
 
-		return res.status(500).json({
-			success: false,
-			error: "Internal server error"
-		});
-	}
+    } catch (error) {
+
+        console.error(
+            "Donation error:",
+            error
+        );
+
+        return res.status(500).json({
+            success: false,
+            error: "Internal server error"
+        });
+    }
 });
 
 // ======================================================
@@ -737,11 +694,11 @@ app.post("/donation", async (req, res) => {
 // ======================================================
 
 app.listen(
-	PORT,
-	"0.0.0.0",
-	() => {
-		console.log(
-			`Server running on port ${PORT}`
-		);
-	}
+    PORT,
+    "0.0.0.0",
+    () => {
+        console.log(
+            `Server running on port ${PORT}`
+        );
+    }
 );
