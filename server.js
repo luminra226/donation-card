@@ -378,63 +378,63 @@ async function createDonationCard({
 
     <g>
 
-        <!-- ============================================= -->
-        <!-- ROBUX ICON -->
-        <!-- ============================================= -->
+<!-- ROBUX ICON -->
+<g
+    transform="
+        translate(
+            ${iconCenterX - 38},
+            162
+        )
+    "
+>
+    <!-- Outer black outline -->
+    <path
+        d="
+            M38 0
+            L70 18
+            Q76 21 76 28
+            L76 48
+            Q76 55 70 58
+            L38 76
+            L6 58
+            Q0 55 0 48
+            L0 28
+            Q0 21 6 18
+            Z
+        "
+        fill="${theme.accent}"
+        stroke="#000000"
+        stroke-width="7"
+        stroke-linejoin="round"
+    />
 
-        <g
-            transform="
-                translate(
-                    ${iconCenterX - 38},
-                    162
-                )
-            "
-        >
+    <!-- Inner black outline -->
+    <path
+        d="
+            M38 13
+            L61 26
+            L61 50
+            L38 63
+            L15 50
+            L15 26
+            Z
+        "
+        fill="none"
+        stroke="#000000"
+        stroke-width="5"
+        stroke-linejoin="round"
+    />
 
-            <!-- Outer diamond -->
-            <path
-                d="
-                    M38 0
-                    L72 18
-                    L72 58
-                    L38 76
-                    L4 58
-                    L4 18
-                    Z
-                "
-                fill="${theme.accent}"
-            />
-
-            <!-- Inner Roblox-style cutout -->
-            <path
-                d="
-                    M27 18
-                    L51 12
-                    L59 20
-                    L51 58
-                    L25 64
-                    L17 56
-                    Z
-                "
-                fill="#111214"
-            />
-
-            <!-- Inner highlight -->
-            <path
-                d="
-                    M30 27
-                    L45 23
-                    L49 27
-                    L44 49
-                    L29 53
-                    L25 49
-                    Z
-                "
-                fill="${theme.accent}"
-                opacity="0.95"
-            />
-
-        </g>
+    <!-- Center square -->
+    <rect
+        x="31"
+        y="31"
+        width="14"
+        height="14"
+        rx="1"
+        fill="#000000"
+    />
+</g>
 
         <!-- ============================================= -->
         <!-- AMOUNT -->
