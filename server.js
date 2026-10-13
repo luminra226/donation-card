@@ -67,6 +67,40 @@ function escapeXml(value) {
 }
 
 // ======================================================
+// MEASURE TEXT (real rendered ink width)
+// ======================================================
+
+async function measureInk(text, fontSize) {
+    const originX = 100;
+
+    const svg = `
+<svg width="4000" height="400" xmlns="http://www.w3.org/2000/svg">
+    <text
+        x="${originX}"
+        y="250"
+        font-family="Arial Black, Arial, Helvetica, sans-serif"
+        font-size="${fontSize}"
+        font-weight="900"
+        fill="#000000"
+    >${escapeXml(text)}</text>
+</svg>`;
+
+    const png = await sharp(Buffer.from(svg))
+        .png()
+        .toBuffer();
+
+    const { info } = await sharp(png)
+        .trim({ threshold: 1 })
+        .toBuffer({ resolveWithObject: true });
+
+    return {
+        width: info.width,
+        // distance from the text origin to the first inked pixel
+        inkLeft: (-info.trimOffsetLeft) - originX
+    };
+}
+
+// ======================================================
 // REMOVE EXTRA @
 // ======================================================
 
@@ -399,59 +433,43 @@ async function createDonationCard({
 
         <!-- ROBUX ICON -->
 
-        <g
-            transform="
-                translate(
-                    ${iconX},
-                    95
-                )
-                scale(1.26)
-            "
-        >
+        <g transform="translate(${iconX}, ${iconY})">
 
-            <path
-                d="
-                    M38 0
-                    L68 17
-                    Q75 21 75 28
-                    L75 48
-                    Q75 55 68 59
-                    L38 76
-                    L8 59
-                    Q1 55 1 48
-                    L1 28
-                    Q1 21 8 17
-                    Z
-                "
-                fill="${theme.accent}"
-                stroke="#000000"
-                stroke-width="5"
-                stroke-linejoin="round"
-            />
+            <defs>
+                <mask id="iconHole" maskUnits="userSpaceOnUse"
+                      x="0" y="0" width="${iconW}" height="${iconH}">
+                    <rect x="0" y="0" width="${iconW}" height="${iconH}" fill="#FFFFFF" />
+                    <rect
+                        x="${iconCx - holeW / 2}"
+                        y="${iconCy - holeH / 2}"
+                        width="${holeW}"
+                        height="${holeH}"
+                        fill="#000000"
+                    />
+                </mask>
+            </defs>
 
-            <path
-                d="
-                    M38 15
-                    L58 27
-                    L58 49
-                    L38 61
-                    L18 49
-                    L18 27
-                    Z
-                "
-                fill="none"
-                stroke="#000000"
-                stroke-width="4"
-                stroke-linejoin="round"
-            />
+            <g mask="url(#iconHole)">
 
-            <rect
-                x="31"
-                y="31"
-                width="14"
-                height="14"
-                fill="#000000"
-            />
+                <!-- Outer hexagon ring -->
+                <polygon
+                    points="${iconRingPoints}"
+                    fill="none"
+                    stroke="${theme.accent}"
+                    stroke-width="${ringStroke}"
+                    stroke-linejoin="round"
+                />
+
+                <!-- Solid inner hexagon -->
+                <polygon
+                    points="${iconInnerPoints}"
+                    fill="${theme.accent}"
+                    stroke="${theme.accent}"
+                    stroke-width="${innerStroke}"
+                    stroke-linejoin="round"
+                />
+
+            </g>
 
         </g>
 
@@ -459,15 +477,13 @@ async function createDonationCard({
 
         <text
             x="${amountX}"
-            y="184"
-            text-anchor="middle"
+            y="${amountBaselineY}"
+            text-anchor="start"
             font-family="Arial Black, Arial, Helvetica, sans-serif"
             font-size="${amountFontSize}"
             font-weight="900"
             fill="${theme.accent}"
-        >
-            ${escapeXml(formattedAmount)}
-        </text>
+        >${escapeXml(formattedAmount)}</text>
 
     </g>
 
