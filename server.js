@@ -192,23 +192,41 @@ async function createDonationCard({
     // AMOUNT GROUP
     // ==================================================
 
-    const iconSize = 96;
-    const iconGap = 22;
+    // Robux icon box (pointy-top hexagon). Measured from the
+    // reference: it is the same height as the digits (slightly
+    // taller), starts level with the top of the digits and sits
+    // right next to the number.
+    const iconW = 92;
+    const iconH = 98;
+    const iconGap = 15;
 
     const amountFontSize = 112;
+    const amountBaselineY = 188;
 
-    // Approximate width of Arial Black digits.
-    const amountTextWidth =
-        formattedAmount.length * 72;
+    // Digit height of the font (~0.716 of the font size for Arial-like fonts)
+    const digitHeight = Math.round(amountFontSize * 0.716);
+    const digitTopY = amountBaselineY - digitHeight;
+
+    // Icon top is level with the top of the digits (2px higher, like the reference)
+    const iconY = digitTopY - 2;
+
+    // Measure the REAL width of the rendered amount text (works with
+    // whatever font the server ends up using) instead of guessing.
+    const amountInk =
+        await measureInk(
+            formattedAmount,
+            amountFontSize
+        );
 
     const totalAmountWidth =
-        iconSize +
+        iconW +
         iconGap +
-        amountTextWidth;
+        amountInk.width;
 
     const amountGroupCenterX =
         WIDTH / 2;
 
+    // Left edge of the whole [icon + number] group, centered on the card
     const amountStartX =
         amountGroupCenterX -
         (totalAmountWidth / 2);
@@ -216,11 +234,51 @@ async function createDonationCard({
     const iconX =
         amountStartX;
 
-    const amountX =
+    // Left edge of the first digit's ink
+    const amountInkX =
         amountStartX +
-        iconSize +
-        iconGap +
-        (amountTextWidth / 2);
+        iconW +
+        iconGap;
+
+    // text-anchor="start" origin, corrected for the glyph's left bearing
+    const amountX =
+        amountInkX -
+        amountInk.inkLeft;
+
+    // ==================================================
+    // ROBUX ICON GEOMETRY
+    // ==================================================
+    // Layers (like the reference): thin outer hexagon ring,
+    // small dark gap, solid inner hexagon, square hole in the middle.
+
+    const hex = (cx, cy, w, h) => [
+        [cx, cy - h / 2],
+        [cx + w / 2, cy - h / 4],
+        [cx + w / 2, cy + h / 4],
+        [cx, cy + h / 2],
+        [cx - w / 2, cy + h / 4],
+        [cx - w / 2, cy - h / 4]
+    ].map(p => p.join(",")).join(" ");
+
+    const iconCx = iconW / 2;
+    const iconCy = iconH / 2;
+
+    const ringStroke = 9;
+    const innerStroke = 9;
+
+    const iconRingPoints =
+        hex(
+            iconCx,
+            iconCy,
+            iconW - ringStroke,
+            iconH - ringStroke
+        );
+
+    const iconInnerPoints =
+        hex(iconCx, iconCy, 56, 60);
+
+    const holeW = 22;
+    const holeH = 26;
 
     // ==================================================
     // BACKGROUND GRADIENT (optional)
