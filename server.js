@@ -77,26 +77,52 @@ function cleanUsername(name) {
 // ======================================================
 // DONATION THEME
 // ======================================================
+// accent   = ring / amount / icon colour
+// gradient = optional background fade from the bottom
+//            (bottom = colour at the very bottom edge,
+//             start  = where the fade begins, 0 = top, 1 = bottom)
 
 function getDonationTheme(amount) {
 
-    // 100,000 - 9,999,999
+    // 100,000 - 999,999  (magenta, flat, no gradient)
+    if (amount < 1_000_000) {
+        return {
+            accent: "#FF00F7",
+            gradient: null
+        };
+    }
+
+    // 1,000,000 - 9,999,999  (hot pink, short soft gradient)
+    // Values measured from the reference screenshot.
     if (amount < 10_000_000) {
         return {
-            accent: "#FF00C8"
+            accent: "#FF0088",
+            gradient: {
+                bottom: "#42092A",
+                start: 0.75
+            }
         };
     }
 
-    // 10,000,000 - 99,999,999
+    // 10,000,000 - 99,999,999  (red, long strong gradient)
+    // Values measured from the reference screenshot.
     if (amount < 100_000_000) {
         return {
-            accent: "#FFAA00"
+            accent: "#FF0000",
+            gradient: {
+                bottom: "#9B0806",
+                start: 0.20
+            }
         };
     }
 
-    // 100,000,000+
+    // 100,000,000+  (cyan, same style as the red tier)
     return {
-        accent: "#00FFFF"
+        accent: "#00FFFF",
+        gradient: {
+            bottom: "#069B9B",
+            start: 0.20
+        }
     };
 }
 
@@ -148,7 +174,7 @@ async function createDonationCard({
         cleanUsername(raiserName);
 
     // ==================================================
-    // EXACT REFERENCE LAYOUT
+    // LAYOUT
     // ==================================================
 
     const WIDTH = 1872;
@@ -165,10 +191,6 @@ async function createDonationCard({
     // ==================================================
     // AMOUNT GROUP
     // ==================================================
-
-    // Reference:
-    // icon is immediately to the left of the number
-    // and the entire group is centered.
 
     const iconSize = 96;
     const iconGap = 22;
@@ -201,6 +223,41 @@ async function createDonationCard({
         (amountTextWidth / 2);
 
     // ==================================================
+    // BACKGROUND GRADIENT (optional)
+    // ==================================================
+
+    const gradientDefs = theme.gradient
+        ? `
+        <linearGradient
+            id="bgGradient"
+            x1="0" y1="0"
+            x2="0" y2="1"
+        >
+            <stop
+                offset="${theme.gradient.start}"
+                stop-color="${theme.gradient.bottom}"
+                stop-opacity="0"
+            />
+            <stop
+                offset="1"
+                stop-color="${theme.gradient.bottom}"
+                stop-opacity="1"
+            />
+        </linearGradient>`
+        : "";
+
+    const gradientRect = theme.gradient
+        ? `
+    <rect
+        x="0"
+        y="0"
+        width="${WIDTH}"
+        height="${HEIGHT}"
+        fill="url(#bgGradient)"
+    />`
+        : "";
+
+    // ==================================================
     // SVG
     // ==================================================
 
@@ -214,10 +271,6 @@ async function createDonationCard({
 
     <defs>
 
-        <!-- ========================================== -->
-        <!-- LEFT AVATAR -->
-        <!-- ========================================== -->
-
         <clipPath id="leftAvatarClip">
             <circle
                 cx="${leftAvatarX}"
@@ -226,10 +279,6 @@ async function createDonationCard({
             />
         </clipPath>
 
-        <!-- ========================================== -->
-        <!-- RIGHT AVATAR -->
-        <!-- ========================================== -->
-
         <clipPath id="rightAvatarClip">
             <circle
                 cx="${rightAvatarX}"
@@ -237,13 +286,14 @@ async function createDonationCard({
                 r="${avatarRadius}"
             />
         </clipPath>
+        ${gradientDefs}
 
     </defs>
 
+    <!-- BACKGROUND GRADIENT -->
+    ${gradientRect}
 
-    <!-- ================================================= -->
     <!-- LEFT AVATAR -->
-    <!-- ================================================= -->
 
     <image
         href="data:image/png;base64,${donatorBase64}"
@@ -255,8 +305,6 @@ async function createDonationCard({
         clip-path="url(#leftAvatarClip)"
     />
 
-    <!-- Pink ring -->
-
     <circle
         cx="${leftAvatarX}"
         cy="${avatarY}"
@@ -266,10 +314,7 @@ async function createDonationCard({
         stroke-width="7"
     />
 
-
-    <!-- ================================================= -->
     <!-- RIGHT AVATAR -->
-    <!-- ================================================= -->
 
     <image
         href="data:image/png;base64,${raiserBase64}"
@@ -281,8 +326,6 @@ async function createDonationCard({
         clip-path="url(#rightAvatarClip)"
     />
 
-    <!-- Pink ring -->
-
     <circle
         cx="${rightAvatarX}"
         cy="${avatarY}"
@@ -292,16 +335,11 @@ async function createDonationCard({
         stroke-width="7"
     />
 
-
-    <!-- ================================================= -->
     <!-- CENTER AMOUNT -->
-    <!-- ================================================= -->
 
     <g>
 
-        <!-- ============================================= -->
         <!-- ROBUX ICON -->
-        <!-- ============================================= -->
 
         <g
             transform="
@@ -312,8 +350,6 @@ async function createDonationCard({
                 scale(1.26)
             "
         >
-
-            <!-- Outer Robux shape -->
 
             <path
                 d="
@@ -335,8 +371,6 @@ async function createDonationCard({
                 stroke-linejoin="round"
             />
 
-            <!-- Inner outline -->
-
             <path
                 d="
                     M38 15
@@ -353,8 +387,6 @@ async function createDonationCard({
                 stroke-linejoin="round"
             />
 
-            <!-- Center square -->
-
             <rect
                 x="31"
                 y="31"
@@ -365,10 +397,7 @@ async function createDonationCard({
 
         </g>
 
-
-        <!-- ============================================= -->
         <!-- AMOUNT -->
-        <!-- ============================================= -->
 
         <text
             x="${amountX}"
@@ -384,10 +413,7 @@ async function createDonationCard({
 
     </g>
 
-
-    <!-- ================================================= -->
     <!-- DONATED TO -->
-    <!-- ================================================= -->
 
     <text
         x="${WIDTH / 2}"
@@ -401,10 +427,7 @@ async function createDonationCard({
         donated to
     </text>
 
-
-    <!-- ================================================= -->
     <!-- LEFT USERNAME -->
-    <!-- ================================================= -->
 
     <text
         x="${leftAvatarX}"
@@ -418,10 +441,7 @@ async function createDonationCard({
         @${escapeXml(donatorUsername)}
     </text>
 
-
-    <!-- ================================================= -->
     <!-- RIGHT USERNAME -->
-    <!-- ================================================= -->
 
     <text
         x="${rightAvatarX}"
@@ -471,9 +491,7 @@ app.post("/donation", async (req, res) => {
             RaiserId
         } = req.body;
 
-        // ==============================================
         // VALIDATION
-        // ==============================================
 
         if (
             !DonatorName ||
@@ -508,9 +526,7 @@ app.post("/donation", async (req, res) => {
             });
         }
 
-        // ==============================================
         // 100K MINIMUM
-        // ==============================================
 
         if (amount < 100000) {
             return res.json({
@@ -519,9 +535,7 @@ app.post("/donation", async (req, res) => {
             });
         }
 
-        // ==============================================
         // WEBHOOK CHECK
-        // ==============================================
 
         if (!DISCORD_WEBHOOK_URL) {
 
@@ -535,9 +549,7 @@ app.post("/donation", async (req, res) => {
             });
         }
 
-        // ==============================================
         // CREATE CARD
-        // ==============================================
 
         const card =
             await createDonationCard({
@@ -548,9 +560,7 @@ app.post("/donation", async (req, res) => {
                 raiserId: raiserId
             });
 
-        // ==============================================
         // FORMAT DATE
-        // ==============================================
 
         const now = new Date();
 
@@ -573,9 +583,7 @@ app.post("/donation", async (req, res) => {
                 16
             );
 
-        // ==============================================
         // DISCORD WEBHOOK
-        // ==============================================
 
         const form =
             new FormData();
